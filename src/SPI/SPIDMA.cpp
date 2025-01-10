@@ -10,10 +10,13 @@
 #include "stm32yyxx_ll_spi.h"
 
 void SPI_DMA::begin() {
+	_spi.handle.State = HAL_SPI_STATE_RESET;
+	_spiSettings = SPISettings();
+	init();
 }
 
 void SPI_DMA::init() {
-	SPIClass::init();
+	//SPIClass::init();
 	initSPI();
 	initDMA();
 	initNVIC();
