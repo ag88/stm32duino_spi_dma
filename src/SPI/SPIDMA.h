@@ -27,8 +27,13 @@ public:
 	/* note if skipReceive is true, this is async, it returns while DMA is sending */
 	virtual void transfer(void *buf, size_t count, bool skipReceive);
 
+	/* bulk transfer, this waits for transfer to complete */
 	virtual void transfer(const void *tx_buf, void *rx_buf, size_t count);
+
+	/* note this is async, it returns while DMA is sending/receiving */
 	virtual void transfer_async(const void *tx_buf, void *rx_buf, size_t count);
+
+	/* check if transfer is complete */
 	virtual boolean isTransferComplete();
 
 	virtual ~SPI_DMA();
