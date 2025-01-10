@@ -231,16 +231,34 @@ uint16_t SPI_DMA::transfer16(uint16_t data, bool skipReceive) {
 }
 
 void SPI_DMA::transfer(const void *tx_buf, void *rx_buf, size_t count) {
+	transfer_async(tx_buf, rx_buf, count);
+	// wait for transfer to complete
+	while(! isTransferComplete());
+}
+
+
+inline void SPI_DMA::transfer_async(const void *tx_buf, void *rx_buf, size_t count) {
 	HAL_SPI_DMAResume(&_spi.handle);
 	HAL_SPI_TransmitReceive_DMA(&_spi.handle, (uint8_t*) tx_buf, (uint8_t*) rx_buf, count);
 }
 
+inline boolean SPI_DMA::isTransferComplete() {
+	return HAL_SPI_GetState(&_spi.handle) == HAL_SPI_STATE_READY;
+}
+
 
 void SPI_DMA::transfer(void *buf, size_t count, bool skipReceive) {
-	uint8_t *rx_buf = (uint8_t *) alloca(count);
+	uint8_t *rx_buf;
 	HAL_SPI_DMAResume(&_spi.handle);
-	HAL_SPI_TransmitReceive_DMA(&_spi.handle, (uint8_t*) buf, (uint8_t*) rx_buf, count);
-	memcpy(buf, rx_buf, count);
+	if (skipReceive) {
+		HAL_SPI_Transmit_DMA(&_spi.handle, (uint8_t*) buf, count);
+	} else {
+		rx_buf = (uint8_t *) alloca(count);
+		HAL_SPI_TransmitReceive_DMA(&_spi.handle, (uint8_t*) buf, (uint8_t*) rx_buf, count);
+		//wait for transfer to complete
+		while(HAL_SPI_GetState(&_spi.handle) != HAL_SPI_STATE_READY);
+		memcpy(buf, rx_buf, count);
+	}
 }
 
 uint32_t SPI_DMA::getClkFreq(spi_t *obj) {

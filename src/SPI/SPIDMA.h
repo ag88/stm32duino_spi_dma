@@ -22,9 +22,14 @@ public:
 	virtual void endTransaction();
 
 	virtual uint8_t transfer(uint8_t data, bool skipReceive);
-	virtual void transfer(const void *tx_buf, void *rx_buf, size_t count);
 	virtual uint16_t transfer16(uint16_t data, bool skipReceive);
+
+	/* note if skipReceive is true, this is async, it returns while DMA is sending */
 	virtual void transfer(void *buf, size_t count, bool skipReceive);
+
+	virtual void transfer(const void *tx_buf, void *rx_buf, size_t count);
+	virtual void transfer_async(const void *tx_buf, void *rx_buf, size_t count);
+	virtual boolean isTransferComplete();
 
 	virtual ~SPI_DMA();
 
