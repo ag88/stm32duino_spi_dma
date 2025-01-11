@@ -16,57 +16,33 @@ void SPI_DMA::begin() {
 }
 
 void SPI_DMA::init() {
+
+	// class that override this init() method should specify _spi.spi
+	// _spi.spi = SPI1;
+
 	//SPIClass::init();
 	initSPI();
 	initDMA();
 	initNVIC();
-	initPINS();
-}
-
-void SPI_DMA::initDMA() {
-	/* DMA controller clock enable */
-	__HAL_RCC_DMA2_CLK_ENABLE();
-
-    // Initialize DMA for TX
-    hdma_tx.Instance = DMA2_Stream3;
-    hdma_tx.Init.Channel = DMA_CHANNEL_3;
-    hdma_tx.Init.Direction = DMA_MEMORY_TO_PERIPH;
-    hdma_tx.Init.PeriphInc = DMA_PINC_DISABLE;
-    hdma_tx.Init.MemInc = DMA_MINC_ENABLE;
-    hdma_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
-    hdma_tx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
-    hdma_tx.Init.Mode = DMA_NORMAL;
-    hdma_tx.Init.Priority = DMA_PRIORITY_LOW;
-    hdma_tx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
-
-    if (HAL_DMA_Init(&hdma_tx) != HAL_OK) {
-        // Initialization Error
-        Error_Handler();
-    }
-
-    __HAL_LINKDMA(&_spi.handle, hdmatx, hdma_tx);
-
-    // Initialize DMA for RX
-    hdma_rx.Instance = DMA2_Stream0;
-    hdma_rx.Init.Channel = DMA_CHANNEL_3;
-    hdma_rx.Init.Direction = DMA_PERIPH_TO_MEMORY;
-    hdma_rx.Init.PeriphInc = DMA_PINC_DISABLE;
-    hdma_rx.Init.MemInc = DMA_MINC_ENABLE;
-    hdma_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
-    hdma_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
-    hdma_rx.Init.Mode = DMA_NORMAL;
-    hdma_rx.Init.Priority = DMA_PRIORITY_HIGH;
-    hdma_rx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
-
-    if (HAL_DMA_Init(&hdma_rx) != HAL_OK) {
-        // Initialization Error
-        Error_Handler();
-    }
-
-    __HAL_LINKDMA(&_spi.handle, hdmarx, hdma_rx);
+	initPins();
 }
 
 void SPI_DMA::initSPI() {
+/* class that derives SPI_DMA should enable SPI clock and
+ * initialize SPI e.g. call initSPIDefault();
+#if defined SPI1_BASE
+	// Enable SPI clock
+	if (_spi.spi == SPI1 && ! __HAL_RCC_SPI1_IS_CLK_ENABLED() ) {
+		__HAL_RCC_SPI1_CLK_ENABLE();
+		__HAL_RCC_SPI1_FORCE_RESET();
+		__HAL_RCC_SPI1_RELEASE_RESET();
+	}
+#endif
+*/
+	initSPIDefault();
+}
+
+void SPI_DMA::initSPIDefault() {
 
 	uint32_t speed = _spiSettings.getClockFreq();
 	SPIMode spimode = _spiSettings.getDataMode();
@@ -87,14 +63,6 @@ void SPI_DMA::initSPI() {
     _spi.handle.Init.CRCPolynomial = 10;
     */
 
-#if defined SPI1_BASE
-	// Enable SPI clock
-	if (_spi.spi == SPI1 && ! __HAL_RCC_SPI1_IS_CLK_ENABLED() ) {
-		__HAL_RCC_SPI1_CLK_ENABLE();
-		__HAL_RCC_SPI1_FORCE_RESET();
-		__HAL_RCC_SPI1_RELEASE_RESET();
-	}
-#endif
 
 	  // Configure the SPI pins
 	  if (_spi.pin_ssel != NC) {
@@ -108,7 +76,7 @@ void SPI_DMA::initSPI() {
 	  _spi.handle.Init.Mode			= SPI_MODE_MASTER;
 
 	  //uint32_t spi_freq = spi_getClkFreqInst(_spi.spi);
-	  uint32_t spi_freq = SPIClass::getClkFreq(&_spi);
+	  uint32_t spi_freq = getClkFreq(&_spi);
 	  /* For SUBGHZSPI,  'SPI_BAUDRATEPRESCALER_*' == 'SUBGHZSPI_BAUDRATEPRESCALER_*' */
 	  if (speed >= (spi_freq / SPI_SPEED_CLOCK_DIV2_MHZ)) {
 	    _spi.handle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
@@ -165,16 +133,17 @@ void SPI_DMA::initSPI() {
     }
 }
 
-void SPI_DMA::initNVIC() {
-    // Configure NVIC for DMA
-    HAL_NVIC_SetPriority(DMA2_Stream3_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(DMA2_Stream3_IRQn);
 
-    HAL_NVIC_SetPriority(DMA2_Stream0_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(DMA2_Stream0_IRQn);
+void SPI_DMA::initNVIC(IRQn_Type DMA_IRQn_TX, IRQn_Type DMA_IRQn_RX) {
+    // Configure NVIC for DMA
+    HAL_NVIC_SetPriority(DMA_IRQn_TX, 0, 0);
+    HAL_NVIC_EnableIRQ(DMA_IRQn_TX);
+
+    HAL_NVIC_SetPriority(DMA_IRQn_RX, 0, 0);
+    HAL_NVIC_EnableIRQ(DMA_IRQn_RX);
 }
 
-void SPI_DMA::initPINS() {
+void SPI_DMA::initPins() {
 
     SPI_TypeDef *spi_mosi = (SPI_TypeDef *) pinmap_peripheral(_spi.pin_mosi, PinMap_SPI_MOSI);
     SPI_TypeDef *spi_miso = (SPI_TypeDef *) pinmap_peripheral(_spi.pin_miso, PinMap_SPI_MISO);
@@ -242,7 +211,7 @@ inline void SPI_DMA::transfer_async(const void *tx_buf, void *rx_buf, size_t cou
 	HAL_SPI_TransmitReceive_DMA(&_spi.handle, (uint8_t*) tx_buf, (uint8_t*) rx_buf, count);
 }
 
-inline boolean SPI_DMA::isTransferComplete() {
+inline bool SPI_DMA::isTransferComplete() {
 	return HAL_SPI_GetState(&_spi.handle) == HAL_SPI_STATE_READY;
 }
 

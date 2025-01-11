@@ -34,29 +34,39 @@ public:
 	virtual void transfer_async(const void *tx_buf, void *rx_buf, size_t count);
 
 	/* check if transfer is complete */
-	virtual boolean isTransferComplete();
+	virtual bool isTransferComplete();
 
 	virtual ~SPI_DMA();
 
 protected:
-	virtual uint32_t getClkFreq(spi_t *obj);
-	virtual void init();
-
-	virtual void initSPI();
-	virtual void initDMA();
-	virtual void initNVIC();
-	virtual void initPINS();
-
 	//SPI handle from base class
     //SPI_HandleTypeDef* hspi;
 
     DMA_HandleTypeDef hdma_tx;
     DMA_HandleTypeDef hdma_rx;
-
-private:
     /* Current SPISettings */
     SPISettings   _spiSettings = SPISettings();
 
+	virtual uint32_t getClkFreq(spi_t *obj);
+
+	// derived class override this init() method should specify _spi.spi see definition
+	virtual void init();
+
+	virtual void initSPI();
+	virtual void initSPIDefault();
+
+	/* DMA initialization are pure virtual functions because DMA hardware and definition
+	 * is different between series
+	 */
+	virtual void initDMA() = 0;
+	virtual void initDMADefault() = 0;
+
+	// initNVIC is pure virtual, derived class from
+	virtual void initNVIC() = 0;
+	virtual void initNVIC(IRQn_Type DMA_IRQn_TX, IRQn_Type DMA_IRQn_RX);
+	virtual void initPins();
+
+private:
 
 };
 
