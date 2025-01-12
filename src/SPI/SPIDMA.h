@@ -60,6 +60,9 @@ protected:
 	// derived class should override this init() method and specify _spi.spi see definition
 	virtual void init();
 
+	/* derived class should override this initSPI() method, enable SPI clock
+	 * and call SPI_DMA::initSPIDefault() to initialize SPI
+	 */
 	virtual void initSPI();
 	virtual void initSPIDefault();
 
@@ -69,7 +72,10 @@ protected:
 	virtual void initDMA() = 0;
 	virtual void initDMADefault() = 0;
 
-	// initNVIC is pure virtual, derived class from
+	/* initNVIC is pure virtual, derived class should override/implement initNVIC()
+	 * and call SPI_DMA::initNVIC(IRQn_Type DMA_IRQn_TX, IRQn_Type DMA_IRQn_RX)
+	 * to initialise the DMA NVIC hooks
+	 */
 	virtual void initNVIC() = 0;
 	virtual void initNVIC(IRQn_Type DMA_IRQn_TX, IRQn_Type DMA_IRQn_RX);
 	virtual void initPins();

@@ -17,7 +17,7 @@ void SPI_DMA::begin() {
 
 void SPI_DMA::init() {
 
-	// class that override this init() method should specify _spi.spi
+	// derived class should override this init() method should specify _spi.spi
 	// _spi.spi = SPI1;
 
 	//SPIClass::init();
@@ -27,6 +27,9 @@ void SPI_DMA::init() {
 	initPins();
 }
 
+/* derived class should override this initSPI() method, enable SPI clock
+ * and call SPI_DMA::initSPIDefault() to initialize SPI
+ */
 void SPI_DMA::initSPI() {
 /* class that derives SPI_DMA should enable SPI clock and
  * initialize SPI e.g. call initSPIDefault();
