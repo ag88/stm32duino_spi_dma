@@ -51,7 +51,17 @@ protected:
     /* Current SPISettings */
     SPISettings   _spiSettings = SPISettings();
 
+    /*
+     * note this function should override SPI_DMA::getClkFreq (returns SystemCoreClock by default)
+     * and should return the base clock frequency (e.g. PCLK)
+     * used to derive the SPI pre-scalers for baud rates
+     *
+     * SPI1, SPI4, SPI5 and SPI6. Source CLK is PCKL2
+     * SPI_2 and SPI_3. Source CLK is PCKL1
+     *
+     */
 	virtual uint32_t getClkFreq(spi_t *obj) override;
+
 	virtual void init() override;
 
 	/*
@@ -99,6 +109,7 @@ protected:
 
 	virtual void initNVIC() override;
 
+	virtual uint32_t getClkFreq(spi_t *obj) override;
 private:
 };
 
@@ -121,6 +132,8 @@ protected:
 	virtual void initDMA() override;
 
 	virtual void initNVIC() override;
+
+	virtual uint32_t getClkFreq(spi_t *obj) override;
 
 private:
 };

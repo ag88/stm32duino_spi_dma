@@ -121,8 +121,17 @@ void SPI_DMAF4::endTransaction() {
 }
 
 
+/*
+ * note this function should override SPI_DMA::getClkFreq (returns SystemCoreClock by default)
+ * and should return the base clock frequency (e.g. PCLK)
+ * used to derive the SPI pre-scalers for baud rates
+ *
+ * SPI1, SPI4, SPI5 and SPI6. Source CLK is PCKL2
+ * SPI_2 and SPI_3. Source CLK is PCKL1
+ *
+ */
 uint32_t SPI_DMAF4::getClkFreq(spi_t *obj) {
-	return SPIClass::getClkFreq(obj);
+	return HAL_RCC_GetPCLK2Freq();
 }
 
 SPI_DMAF4::~SPI_DMAF4() {
@@ -172,6 +181,12 @@ void SPI_DMAF4_SPI2::initNVIC() {
 
 }
 
+uint32_t SPI_DMAF4_SPI2::getClkFreq(spi_t *obj) {
+	/* SPI_2 and SPI_3. Source CLK is PCKL1 */
+	return HAL_RCC_GetPCLK1Freq();
+}
+
+
 /* SPI 3 */
 void SPI_DMAF4_SPI3::init() {
 	// class that override init() method from SPI_DMA should specify _spi.spi
@@ -213,6 +228,11 @@ void SPI_DMAF4_SPI3::initNVIC() {
 	// Configure NVIC for DMA (TX, RX)
 	SPI_DMA::initNVIC(DMA1_Stream2_IRQn, DMA1_Stream5_IRQn);
 
+}
+
+uint32_t SPI_DMAF4_SPI3::getClkFreq(spi_t *obj) {
+	/* SPI_2 and SPI_3. Source CLK is PCKL1 */
+	return HAL_RCC_GetPCLK1Freq();
 }
 
 

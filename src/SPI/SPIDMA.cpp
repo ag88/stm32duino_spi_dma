@@ -230,8 +230,17 @@ void SPI_DMA::transfer(void *buf, size_t count, bool skipReceive) {
 	}
 }
 
+/*
+ * note this function returns SystemCoreClock by default
+ * derived class should override this getClkFreq and specify the base clock
+ * frequency (e.g. PCLK) used to derive the SPI pre-scalers for baud rates
+ *
+ * SPI1, SPI4, SPI5 and SPI6. Source CLK is PCKL2
+ * SPI_2 and SPI_3. Source CLK is PCKL1
+ */
 uint32_t SPI_DMA::getClkFreq(spi_t *obj) {
-	return SPIClass::getClkFreq(obj);
+	return SystemCoreClock;
+	//return SPIClass::getClkFreq(obj);
 }
 
 SPI_DMA::~SPI_DMA() {

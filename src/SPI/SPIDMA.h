@@ -47,9 +47,17 @@ protected:
     /* Current SPISettings */
     SPISettings   _spiSettings = SPISettings();
 
+    /*
+     * note this function returns SystemCoreClock by default
+     * derived class should override this getClkFreq and specify the base clock
+     * frequency (e.g. PCLK) used to derive the SPI pre-scalers for baud rates
+     *
+     * SPI1, SPI4, SPI5 and SPI6. Source CLK is PCKL2
+     * SPI_2 and SPI_3. Source CLK is PCKL1
+     */
 	virtual uint32_t getClkFreq(spi_t *obj);
 
-	// derived class override this init() method should specify _spi.spi see definition
+	// derived class should override this init() method and specify _spi.spi see definition
 	virtual void init();
 
 	virtual void initSPI();
