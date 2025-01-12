@@ -9,27 +9,10 @@
 #include "core_debug.h"
 #include "stm32yyxx_ll_spi.h"
 
-void SPI_DMAF4::begin() {
-	_spi.handle.State = HAL_SPI_STATE_RESET;
-	_spiSettings = SPISettings();
-	init();
-}
-
-void SPI_DMAF4::init() {
-	// class that override init() method from SPI_DMA should specify _spi.spi
-	_spi.spi = SPI1;
-
-	SPI_DMA::init();
-	//SPIClass::init();
-	//initSPI();
-	//initDMA();
-	//initNVIC();
-	//initPins();
-}
-
 /*
- * in initSPI() this class should enable SPI clock and initialize SPI
- * e.g. call initSPIDefault();
+ * this class should override this initSPI() method, enable SPI clock
+ * and call SPI_DMA::initSPIDefault(SPI_TypeDef *spi_reg) with the correct
+ * SPI_REGISTER_BASE (e.g. SPI1) to initialize SPI
  */
 void SPI_DMAF4::initSPI() {
 #if defined SPI1_BASE
@@ -40,7 +23,9 @@ void SPI_DMAF4::initSPI() {
 		__HAL_RCC_SPI1_RELEASE_RESET();
 	}
 #endif
-	SPI_DMA::initSPIDefault();
+
+	/* this call sets the SPI instance in _spi.spi*/
+	SPI_DMA::initSPIDefault( SPI1 );
 }
 
 void SPI_DMAF4::initDMA() {
@@ -109,17 +94,6 @@ void SPI_DMAF4::initNVIC() {
 }
 
 
-void SPI_DMAF4::beginTransaction(SPISettings settings) {
-	if (_spiSettings != settings) {
-		_spiSettings = settings;
-		initSPI();
-	}
-
-}
-
-void SPI_DMAF4::endTransaction() {
-}
-
 
 /*
  * note this function should override SPI_DMA::getClkFreq (returns SystemCoreClock by default)
@@ -139,13 +113,12 @@ SPI_DMAF4::~SPI_DMAF4() {
 }
 
 /* SPI 2 */
-void SPI_DMAF4_SPI2::init() {
-	// class that override init() method from SPI_DMA should specify _spi.spi
-	_spi.spi = SPI2;
 
-	SPI_DMA::init();
-}
-
+/*
+ * this class should override this initSPI() method, enable SPI clock
+ * and call SPI_DMA::initSPIDefault(SPI_TypeDef *spi_reg) with the correct
+ * SPI_REGISTER_BASE (e.g. SPI1) to initialize SPI
+ */
 void SPI_DMAF4_SPI2::initSPI() {
 #if defined SPI2_BASE
 	// Enable SPI clock
@@ -155,7 +128,9 @@ void SPI_DMAF4_SPI2::initSPI() {
 		__HAL_RCC_SPI2_RELEASE_RESET();
 	}
 #endif
-	SPI_DMA::initSPIDefault();
+
+	/* this call sets the SPI instance in _spi.spi*/
+	SPI_DMA::initSPIDefault( SPI2 );
 
 }
 
@@ -188,13 +163,12 @@ uint32_t SPI_DMAF4_SPI2::getClkFreq(spi_t *obj) {
 
 
 /* SPI 3 */
-void SPI_DMAF4_SPI3::init() {
-	// class that override init() method from SPI_DMA should specify _spi.spi
-	_spi.spi = SPI3;
 
-	SPI_DMA::init();
-}
-
+/*
+ * this class should override this initSPI() method, enable SPI clock
+ * and call SPI_DMA::initSPIDefault(SPI_TypeDef *spi_reg) with the correct
+ * SPI_REGISTER_BASE (e.g. SPI1) to initialize SPI
+ */
 void SPI_DMAF4_SPI3::initSPI() {
 #if defined SPI3_BASE
 	// Enable SPI clock
@@ -204,7 +178,9 @@ void SPI_DMAF4_SPI3::initSPI() {
 		__HAL_RCC_SPI3_RELEASE_RESET();
 	}
 #endif
-	SPI_DMA::initSPIDefault();
+
+	/* this call sets the SPI instance in _spi.spi*/
+	SPI_DMA::initSPIDefault( SPI3 );
 
 }
 

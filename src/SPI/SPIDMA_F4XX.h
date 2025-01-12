@@ -15,12 +15,12 @@ public:
 	SPI_DMAF4(uint32_t mosi = MOSI, uint32_t miso = MISO, uint32_t sclk = SCK, uint32_t ssel = PNUM_NOT_DEFINED)
 	  : SPI_DMA(mosi, miso, sclk, ssel) {};
 
-	virtual void begin() override;
-
-	virtual void beginTransaction(SPISettings settings) override;
-	virtual void endTransaction();
-
 	/* these are defined in base class SPI_DMA
+
+	// virtual void begin() override;
+
+	// virtual void beginTransaction(SPISettings settings) override;
+	// virtual void endTransaction();
 
 	// virtual uint8_t transfer(uint8_t data, bool skipReceive);
 	// virtual uint16_t transfer16(uint16_t data, bool skipReceive);
@@ -45,28 +45,21 @@ protected:
 	//SPI handle from base class
     //SPI_HandleTypeDef* hspi;
 
-    DMA_HandleTypeDef hdma_tx;
-    DMA_HandleTypeDef hdma_rx;
+	// defined in SPI_DMA
+    // DMA_HandleTypeDef hdma_tx;
+    // DMA_HandleTypeDef hdma_rx;
 
+	// defined in SPI_DMA
     /* Current SPISettings */
-    SPISettings   _spiSettings = SPISettings();
+    // SPISettings   _spiSettings = SPISettings();
 
-    /*
-     * note this function should override SPI_DMA::getClkFreq (returns SystemCoreClock by default)
-     * and should return the base clock frequency (e.g. PCLK)
-     * used to derive the SPI pre-scalers for baud rates
-     *
-     * SPI1, SPI4, SPI5 and SPI6. Source CLK is PCKL2
-     * SPI_2 and SPI_3. Source CLK is PCKL1
-     *
-     */
-	virtual uint32_t getClkFreq(spi_t *obj) override;
-
-	virtual void init() override;
+	// this is defined in SPI_DMA
+	// virtual void init();
 
 	/*
-	 * this class should enable SPI clock and initialize SPI
-	 * e.g. call initSPIDefault();
+	 * this class should override this initSPI() method, enable SPI clock
+	 * and call SPI_DMA::initSPIDefault(SPI_TypeDef *spi_reg) with the correct
+	 * SPI_REGISTER_BASE (e.g. SPI1) to initialize SPI
 	 */
 	virtual void initSPI() override;
 
@@ -85,6 +78,17 @@ protected:
 	// this is defined in base class SPI_DMA
 	// virtual void initPins();
 
+    /*
+     * note this function should override SPI_DMA::getClkFreq (returns SystemCoreClock by default)
+     * and should return the base clock frequency (e.g. PCLK)
+     * used to derive the SPI pre-scalers for baud rates
+     *
+     * SPI1, SPI4, SPI5 and SPI6. Source CLK is PCKL2
+     * SPI_2 and SPI_3. Source CLK is PCKL1
+     *
+     */
+	virtual uint32_t getClkFreq(spi_t *obj) override;
+
 };
 
 typedef class SPI_DMAF4 SPI_DMAF4_SPI1;
@@ -101,7 +105,6 @@ public:
 	virtual ~SPI_DMAF4_SPI2();
 
 protected:
-	virtual void init() override;
 
 	virtual void initSPI() override;
 
@@ -125,7 +128,6 @@ public:
 	virtual ~SPI_DMAF4_SPI3();
 
 protected:
-	virtual void init() override;
 
 	virtual void initSPI() override;
 

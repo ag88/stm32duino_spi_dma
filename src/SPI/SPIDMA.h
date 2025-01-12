@@ -44,6 +44,7 @@ protected:
 
     DMA_HandleTypeDef hdma_tx;
     DMA_HandleTypeDef hdma_rx;
+
     /* Current SPISettings */
     SPISettings   _spiSettings = SPISettings();
 
@@ -57,14 +58,21 @@ protected:
      */
 	virtual uint32_t getClkFreq(spi_t *obj);
 
-	// derived class should override this init() method and specify _spi.spi see definition
+	/*
+	 *  this is called by begin() which in turns call
+	 *  	initSPI();
+	 *		initDMA();
+	 * 		initNVIC();
+	 * 		initPins();
+	 */
 	virtual void init();
 
 	/* derived class should override this initSPI() method, enable SPI clock
-	 * and call SPI_DMA::initSPIDefault() to initialize SPI
+	 * and call SPI_DMA::initSPIDefault(SPI_TypeDef *spi_reg) with the correct
+	 * SPI_REGISTER_BASE (e.g. SPI1) to initialize SPI
 	 */
-	virtual void initSPI();
-	virtual void initSPIDefault();
+	virtual void initSPI() = 0;
+	virtual void initSPIDefault(SPI_TypeDef *spi_reg);
 
 	/* DMA initialization are pure virtual functions because DMA hardware and definition
 	 * is different between series

@@ -17,9 +17,6 @@ void SPI_DMA::begin() {
 
 void SPI_DMA::init() {
 
-	// derived class should override this init() method should specify _spi.spi
-	// _spi.spi = SPI1;
-
 	//SPIClass::init();
 	initSPI();
 	initDMA();
@@ -28,11 +25,10 @@ void SPI_DMA::init() {
 }
 
 /* derived class should override this initSPI() method, enable SPI clock
- * and call SPI_DMA::initSPIDefault() to initialize SPI
- */
+ * and call SPI_DMA::initSPIDefault(SPI_TypeDef *spi_reg) with the correct
+ * SPI_REGISTER_BASE (e.g. SPI1) to initialize SPI
+ *
 void SPI_DMA::initSPI() {
-/* class that derives SPI_DMA should enable SPI clock and
- * initialize SPI e.g. call initSPIDefault();
 #if defined SPI1_BASE
 	// Enable SPI clock
 	if (_spi.spi == SPI1 && ! __HAL_RCC_SPI1_IS_CLK_ENABLED() ) {
@@ -41,11 +37,19 @@ void SPI_DMA::initSPI() {
 		__HAL_RCC_SPI1_RELEASE_RESET();
 	}
 #endif
-*/
-	initSPIDefault();
-}
 
-void SPI_DMA::initSPIDefault() {
+	initSPIDefault(NULL);
+}
+*/
+
+void SPI_DMA::initSPIDefault(SPI_TypeDef *spi_reg) {
+
+	if (spi_reg != NULL) {
+		_spi.spi = spi_reg;
+	} else {
+		core_debug("_spi.spi must not be NULL");
+		return;
+	}
 
 	uint32_t speed = _spiSettings.getClockFreq();
 	SPIMode spimode = _spiSettings.getDataMode();
