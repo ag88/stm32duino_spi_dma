@@ -19,4 +19,4 @@ extern SPIClass SPI;
 #endif
 
 
-#endif /* SPI_SPI_H_ */
+#endif /* INCLUDED_SPI_H_ */
