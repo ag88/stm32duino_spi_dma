@@ -187,7 +187,8 @@ void SPI_DMA::endTransaction() {
 
 uint8_t SPI_DMA::transfer(uint8_t data, bool skipReceive) {
 	uint8_t r = 0;
-	HAL_SPI_DMAPause(&_spi.handle);
+	/* can DMA co-exist with single byte transfers? if not the DMA pause / resume are required */
+	// HAL_SPI_DMAPause(&_spi.handle);
 	while(!LL_SPI_IsActiveFlag_TXE(_spi.spi)); //spinlock
 	LL_SPI_TransmitData8(_spi.spi, data);
 	if (!skipReceive) {
@@ -195,7 +196,7 @@ uint8_t SPI_DMA::transfer(uint8_t data, bool skipReceive) {
 		while(!LL_SPI_IsActiveFlag_RXNE(_spi.spi)); //spinlock
 		r = LL_SPI_ReceiveData8(_spi.spi);
 	}
-	HAL_SPI_DMAResume(&_spi.handle);
+	// HAL_SPI_DMAResume(&_spi.handle);
 	return r;
 }
 
@@ -214,7 +215,8 @@ void SPI_DMA::transfer(const void *tx_buf, void *rx_buf, size_t count) {
 
 
 inline void SPI_DMA::transfer_async(const void *tx_buf, void *rx_buf, size_t count) {
-	HAL_SPI_DMAResume(&_spi.handle);
+	// assuming that DMA is 'pre-enabled'
+	// HAL_SPI_DMAResume(&_spi.handle);
 	HAL_SPI_TransmitReceive_DMA(&_spi.handle, (uint8_t*) tx_buf, (uint8_t*) rx_buf, count);
 }
 
@@ -225,7 +227,8 @@ inline bool SPI_DMA::isTransferComplete() {
 
 void SPI_DMA::transfer(void *buf, size_t count, bool skipReceive) {
 	uint8_t *rx_buf;
-	HAL_SPI_DMAResume(&_spi.handle);
+	// assuming that DMA is 'pre-enabled'
+	// HAL_SPI_DMAResume(&_spi.handle);
 	if (skipReceive) {
 		HAL_SPI_Transmit_DMA(&_spi.handle, (uint8_t*) buf, count);
 	} else {
