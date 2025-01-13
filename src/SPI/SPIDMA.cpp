@@ -232,6 +232,8 @@ void SPI_DMA::transfer(void *buf, size_t count, bool skipReceive) {
 	if (skipReceive) {
 		HAL_SPI_Transmit_DMA(&_spi.handle, (uint8_t*) buf, count);
 	} else {
+		/* can we use the same buffer? that can save up on allocating
+		 * a temporary buffer on the stack here and save up on a memcpy */
 		rx_buf = (uint8_t *) alloca(count);
 		HAL_SPI_TransmitReceive_DMA(&_spi.handle, (uint8_t*) buf, (uint8_t*) rx_buf, count);
 		//wait for transfer to complete
