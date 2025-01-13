@@ -3,6 +3,15 @@
  *
  *  Created on: Jan 9, 2025
  *      Author: andrew
+ *
+ *  Credit for various codes here, and the original SPIClass implementation goes to
+ *  Frederic Pillon (fpiSTM) and others who created the Arduino_Core_STM32 stm32duino core
+ *
+ *  https://github.com/stm32duino/Arduino_Core_STM32
+ *
+ *  Some of the SPIClass methods are overridden here with calls to HAL DMA transfer functions.
+ *  e.g. those transfer() methods that use buffers
+ *
  */
 
 #ifndef SPI_SPIDMA_H_
