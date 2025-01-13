@@ -96,7 +96,7 @@ typedef class SPI_DMAF4 SPI_DMAF4_SPI1;
 /* SPI2 */
 class SPI_DMAF4_SPI2 : public SPI_DMAF4 {
 public:
-	SPI_DMAF4_SPI2(uint32_t mosi = MOSI, uint32_t miso = MISO, uint32_t sclk = SCK, uint32_t ssel = PNUM_NOT_DEFINED)
+	SPI_DMAF4_SPI2(uint32_t mosi = PB15, uint32_t miso = PB14, uint32_t sclk = PB13, uint32_t ssel = PNUM_NOT_DEFINED)
 	  : SPI_DMAF4(mosi, miso, sclk, ssel) {};
 
 	// in base class SPI_DMA4
@@ -119,7 +119,7 @@ private:
 /* SPI3 */
 class SPI_DMAF4_SPI3 : public SPI_DMAF4 {
 public:
-	SPI_DMAF4_SPI3(uint32_t mosi = MOSI, uint32_t miso = MISO, uint32_t sclk = SCK, uint32_t ssel = PNUM_NOT_DEFINED)
+	SPI_DMAF4_SPI3(uint32_t mosi = PB5, uint32_t miso = PB4, uint32_t sclk = PB3, uint32_t ssel = PNUM_NOT_DEFINED)
 	  : SPI_DMAF4(mosi, miso, sclk, ssel) {};
 
 	// in base class SPI_DMA4
