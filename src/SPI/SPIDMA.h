@@ -8,7 +8,7 @@
 #ifndef SPI_SPIDMA_H_
 #define SPI_SPIDMA_H_
 
-#include "SPI.h"
+#include "SPIClass.h"
 
 class SPI_DMA: public SPIClass {
 public:
@@ -21,11 +21,11 @@ public:
 	virtual void beginTransaction(SPISettings settings);
 	virtual void endTransaction();
 
-	virtual uint8_t transfer(uint8_t data, bool skipReceive);
-	virtual uint16_t transfer16(uint16_t data, bool skipReceive);
+	virtual uint8_t transfer(uint8_t data, bool skipReceive = SPI_TRANSMITRECEIVE);
+	virtual uint16_t transfer16(uint16_t data, bool skipReceive = SPI_TRANSMITRECEIVE);
 
 	/* note if skipReceive is true, this is async, it returns while DMA is sending */
-	virtual void transfer(void *buf, size_t count, bool skipReceive);
+	virtual void transfer(void *buf, size_t count, bool skipReceive = SPI_TRANSMITRECEIVE);
 
 	/* bulk transfer, this waits for transfer to complete */
 	virtual void transfer(const void *tx_buf, void *rx_buf, size_t count);
