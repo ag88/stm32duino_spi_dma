@@ -5,19 +5,19 @@
  *      Author: andrew
  */
 
-#if defined(STM32F4xx)
-#include "SPIDMA_F4XX.h"
+#if defined(STM32F1xx)
+#include "SPIDMA_F1XX.h"
 #include "core_debug.h"
 //#include "stm32yyxx_ll_spi.h"
-#include "stm32f4xx_hal.h"
-#include "stm32f4xx_ll_spi.h"
+#include "stm32f1xx_hal.h"
+#include "stm32f1xx_ll_spi.h"
 
 /*
  * this class should override this initSPI() method, enable SPI clock
  * and call SPI_DMA::initSPIDefault(SPI_TypeDef *spi_reg) with the correct
  * SPI_REGISTER_BASE (e.g. SPI1) to initialize SPI
  */
-void SPI_DMAF4::initSPI() {
+void SPI_DMAF1::initSPI() {
 #if defined SPI1_BASE
 	// Enable SPI clock
 	if ( ! __HAL_RCC_SPI1_IS_CLK_ENABLED() ) {
@@ -31,28 +31,40 @@ void SPI_DMAF4::initSPI() {
 	SPI_DMA::initSPIDefault( SPI1 );
 }
 
-void SPI_DMAF4::initDMA() {
+void SPI_DMAF1::initDMA() {
 	/* DMA controller clock enable */
-	__HAL_RCC_DMA2_CLK_ENABLE();
+	__HAL_RCC_DMA1_CLK_ENABLE();
 
     // Initialize DMA for TX
-    hdma_tx.Instance = DMA2_Stream3;
-    hdma_tx.Init.Channel = DMA_CHANNEL_3;
+    hdma_tx.Instance = DMA1_Channel3;
 
     // Initialize DMA for RX
-    hdma_rx.Instance = DMA2_Stream0;
-    hdma_rx.Init.Channel = DMA_CHANNEL_3;
+    hdma_rx.Instance = DMA1_Channel2;
 
     initDMADefault();
 }
 
-void SPI_DMAF4::initDMADefault() {
+void SPI_DMAF1::initDMADefault() {
 	/* DMA controller clock enable */
 	//__HAL_RCC_DMA2_CLK_ENABLE();
 
-    // Initialize DMA for TX
-    //hdma_tx.Instance = DMA2_Stream3;
-    //hdma_tx.Init.Channel = DMA_CHANNEL_3;
+    /* SPI1 DMA Init */
+    /* SPI1_RX Init */
+    hdma_rx.Init.Direction = DMA_PERIPH_TO_MEMORY;
+    hdma_rx.Init.PeriphInc = DMA_PINC_DISABLE;
+    hdma_rx.Init.MemInc = DMA_MINC_ENABLE;
+    hdma_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+    hdma_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+    hdma_rx.Init.Mode = DMA_NORMAL;
+    hdma_rx.Init.Priority = DMA_PRIORITY_LOW;
+    if (HAL_DMA_Init(&hdma_rx) != HAL_OK)
+    {
+      Error_Handler();
+    }
+
+    __HAL_LINKDMA(&_spi.handle,hdmarx,hdma_rx);
+
+    /* SPI1_TX Init */
     hdma_tx.Init.Direction = DMA_MEMORY_TO_PERIPH;
     hdma_tx.Init.PeriphInc = DMA_PINC_DISABLE;
     hdma_tx.Init.MemInc = DMA_MINC_ENABLE;
@@ -60,40 +72,19 @@ void SPI_DMAF4::initDMADefault() {
     hdma_tx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
     hdma_tx.Init.Mode = DMA_NORMAL;
     hdma_tx.Init.Priority = DMA_PRIORITY_LOW;
-    hdma_tx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
-
-
-    if (HAL_DMA_Init(&hdma_tx) != HAL_OK) {
-        // Initialization Error
-        Error_Handler();
+    if (HAL_DMA_Init(&hdma_tx) != HAL_OK)
+    {
+      Error_Handler();
     }
 
-    __HAL_LINKDMA(&_spi.handle, hdmatx, hdma_tx);
+    __HAL_LINKDMA(&_spi.handle,hdmatx,hdma_tx);
 
-    // Initialize DMA for RX
-    //hdma_rx.Instance = DMA2_Stream0;
-    //hdma_rx.Init.Channel = DMA_CHANNEL_3;
-    hdma_rx.Init.Direction = DMA_PERIPH_TO_MEMORY;
-    hdma_rx.Init.PeriphInc = DMA_PINC_DISABLE;
-    hdma_rx.Init.MemInc = DMA_MINC_ENABLE;
-    hdma_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
-    hdma_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
-    hdma_rx.Init.Mode = DMA_NORMAL;
-    hdma_rx.Init.Priority = DMA_PRIORITY_HIGH;
-    hdma_rx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
-
-    if (HAL_DMA_Init(&hdma_rx) != HAL_OK) {
-        // Initialization Error
-        Error_Handler();
-    }
-
-    __HAL_LINKDMA(&_spi.handle, hdmarx, hdma_rx);
 }
 
 
-void SPI_DMAF4::initNVIC() {
+void SPI_DMAF1::initNVIC() {
 	// Configure NVIC for DMA (TX, RX)
-	SPI_DMA::initNVIC(DMA2_Stream3_IRQn, DMA2_Stream0_IRQn);
+	SPI_DMA::initNVIC(DMA1_Channel3_IRQn, DMA1_Channel2_IRQn);
 }
 
 
@@ -107,11 +98,11 @@ void SPI_DMAF4::initNVIC() {
  * SPI_2 and SPI_3. Source CLK is PCKL1
  *
  */
-uint32_t SPI_DMAF4::getClkFreq(spi_t *obj) {
+uint32_t SPI_DMAF1::getClkFreq(spi_t *obj) {
 	return HAL_RCC_GetPCLK2Freq();
 }
 
-SPI_DMAF4::~SPI_DMAF4() {
+SPI_DMAF1::~SPI_DMAF1() {
 	// TODO Auto-generated destructor stub
 }
 
@@ -122,7 +113,7 @@ SPI_DMAF4::~SPI_DMAF4() {
  * and call SPI_DMA::initSPIDefault(SPI_TypeDef *spi_reg) with the correct
  * SPI_REGISTER_BASE (e.g. SPI1) to initialize SPI
  */
-void SPI_DMAF4_SPI2::initSPI() {
+void SPI_DMAF1_SPI2::initSPI() {
 #if defined SPI2_BASE
 	// Enable SPI clock
 	if ( ! __HAL_RCC_SPI2_IS_CLK_ENABLED() ) {
@@ -137,81 +128,78 @@ void SPI_DMAF4_SPI2::initSPI() {
 
 }
 
-void SPI_DMAF4_SPI2::initDMA() {
+void SPI_DMAF1_SPI2::initDMA() {
 	/* DMA controller clock enable */
 	__HAL_RCC_DMA1_CLK_ENABLE();
 
     // Initialize DMA for TX
-    hdma_tx.Instance = DMA1_Stream4;
-    hdma_tx.Init.Channel = DMA_CHANNEL_0;
+    hdma_tx.Instance = DMA1_Channel5;
 
     // Initialize DMA for RX
-    hdma_rx.Instance = DMA1_Stream3;
-    hdma_rx.Init.Channel = DMA_CHANNEL_0;
+    hdma_rx.Instance = DMA1_Channel4;
 
-    SPI_DMAF4::initDMADefault();
+    SPI_DMAF1::initDMADefault();
 
 }
 
-void SPI_DMAF4_SPI2::initNVIC() {
+void SPI_DMAF1_SPI2::initNVIC() {
 	// Configure NVIC for DMA (TX, RX)
-	SPI_DMA::initNVIC(DMA1_Stream4_IRQn, DMA1_Stream3_IRQn);
+	SPI_DMA::initNVIC(DMA1_Channel5_IRQn, DMA1_Channel4_IRQn);
 
 }
 
-uint32_t SPI_DMAF4_SPI2::getClkFreq(spi_t *obj) {
+uint32_t SPI_DMAF1_SPI2::getClkFreq(spi_t *obj) {
 	/* SPI_2 and SPI_3. Source CLK is PCKL1 */
 	return HAL_RCC_GetPCLK1Freq();
 }
 
 
 /* SPI 3 */
-
+#if defined SPI3_BASE
 /*
  * this class should override this initSPI() method, enable SPI clock
  * and call SPI_DMA::initSPIDefault(SPI_TypeDef *spi_reg) with the correct
  * SPI_REGISTER_BASE (e.g. SPI1) to initialize SPI
  */
-void SPI_DMAF4_SPI3::initSPI() {
-#if defined SPI3_BASE
+void SPI_DMAF1_SPI3::initSPI() {
 	// Enable SPI clock
 	if ( ! __HAL_RCC_SPI3_IS_CLK_ENABLED() ) {
 		__HAL_RCC_SPI3_CLK_ENABLE();
 		__HAL_RCC_SPI3_FORCE_RESET();
 		__HAL_RCC_SPI3_RELEASE_RESET();
 	}
-#endif
+
 
 	/* this call sets the SPI instance in _spi.spi*/
 	SPI_DMA::initSPIDefault( SPI3 );
 
 }
 
-void SPI_DMAF4_SPI3::initDMA() {
+void SPI_DMAF1_SPI3::initDMA() {
 	/* DMA controller clock enable */
-	__HAL_RCC_DMA1_CLK_ENABLE();
+	__HAL_RCC_DMA2_CLK_ENABLE();
+
 
     // Initialize DMA for TX
-    hdma_tx.Instance = DMA1_Stream2;
-    hdma_tx.Init.Channel = DMA_CHANNEL_0;
+    hdma_tx.Instance = DMA2_Channel2;
 
     // Initialize DMA for RX
-    hdma_rx.Instance = DMA1_Stream5;
-    hdma_rx.Init.Channel = DMA_CHANNEL_0;
+    hdma_rx.Instance = DMA2_Channel1;
 
-    SPI_DMAF4::initDMADefault();
+    SPI_DMAF1::initDMADefault();
 
 }
 
-void SPI_DMAF4_SPI3::initNVIC() {
+void SPI_DMAF1_SPI3::initNVIC() {
 	// Configure NVIC for DMA (TX, RX)
-	SPI_DMA::initNVIC(DMA1_Stream2_IRQn, DMA1_Stream5_IRQn);
+	SPI_DMA::initNVIC(DMA2_Channel2_IRQn, DMA2_Channel1_IRQn);
 
 }
 
-uint32_t SPI_DMAF4_SPI3::getClkFreq(spi_t *obj) {
+uint32_t SPI_DMAF1_SPI3::getClkFreq(spi_t *obj) {
 	/* SPI_2 and SPI_3. Source CLK is PCKL1 */
 	return HAL_RCC_GetPCLK1Freq();
 }
+#endif //SPI3_BASE
 
-#endif //STM32F4xx
+#endif //STM32F1xx

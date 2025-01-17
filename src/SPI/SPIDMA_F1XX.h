@@ -5,15 +5,15 @@
  *      Author: andrew
  */
 
-#ifndef SPI_SPIDMAF4XX_H_
-#define SPI_SPIDMAF4XX_H_
+#ifndef SPI_SPIDMAF1XX_H_
+#define SPI_SPIDMAF1XX_H_
 
-#if defined(STM32F4xx)
+#if defined(STM32F1xx)
 #include "SPIDMA.h"
 
-class SPI_DMAF4 : public SPI_DMA {
+class SPI_DMAF1 : public SPI_DMA {
 public:
-	SPI_DMAF4(uint32_t mosi = MOSI, uint32_t miso = MISO, uint32_t sclk = SCK, uint32_t ssel = PNUM_NOT_DEFINED)
+	SPI_DMAF1(uint32_t mosi = MOSI, uint32_t miso = MISO, uint32_t sclk = SCK, uint32_t ssel = PNUM_NOT_DEFINED)
 	  : SPI_DMA(mosi, miso, sclk, ssel) {};
 
 	/* these are defined in base class SPI_DMA
@@ -40,7 +40,7 @@ public:
 
 	*/
 
-	virtual ~SPI_DMAF4();
+	virtual ~SPI_DMAF1();
 
 protected:
 	//SPI handle from base class
@@ -66,7 +66,7 @@ protected:
 
 	/*
 	 * DMA needs to be initialized for the common parts for each series
-	 * which is in this class for F4
+	 * which is in this class for F1
 	 */
 	virtual void initDMA() override;
 	virtual void initDMADefault() override;
@@ -92,18 +92,18 @@ protected:
 
 };
 
-typedef class SPI_DMAF4 SPI_DMAF4_SPI1;
+typedef class SPI_DMAF1 SPI_DMAF1_SPI1;
 
 /* SPI2 */
-class SPI_DMAF4_SPI2 : public SPI_DMAF4 {
+class SPI_DMAF1_SPI2 : public SPI_DMAF1 {
 public:
-	SPI_DMAF4_SPI2(uint32_t mosi = PB15, uint32_t miso = PB14, uint32_t sclk = PB13, uint32_t ssel = PNUM_NOT_DEFINED)
-	  : SPI_DMAF4(mosi, miso, sclk, ssel) {};
+	SPI_DMAF1_SPI2(uint32_t mosi = PB15, uint32_t miso = PB14, uint32_t sclk = PB13, uint32_t ssel = PNUM_NOT_DEFINED)
+	  : SPI_DMAF1(mosi, miso, sclk, ssel) {};
 
 	// in base class SPI_DMA4
 	// virtual void begin();
 
-	virtual ~SPI_DMAF4_SPI2();
+	virtual ~SPI_DMAF1_SPI2();
 
 protected:
 
@@ -118,15 +118,16 @@ private:
 };
 
 /* SPI3 */
-class SPI_DMAF4_SPI3 : public SPI_DMAF4 {
+#if defined SPI3_BASE
+class SPI_DMAF1_SPI3 : public SPI_DMAF1 {
 public:
-	SPI_DMAF4_SPI3(uint32_t mosi = PB5, uint32_t miso = PB4, uint32_t sclk = PB3, uint32_t ssel = PNUM_NOT_DEFINED)
-	  : SPI_DMAF4(mosi, miso, sclk, ssel) {};
+	SPI_DMAF1_SPI3(uint32_t mosi = PB5, uint32_t miso = PB4, uint32_t sclk = PB3, uint32_t ssel = PNUM_NOT_DEFINED)
+	  : SPI_DMAF1(mosi, miso, sclk, ssel) {};
 
 	// in base class SPI_DMA4
 	// virtual void begin();
 
-	virtual ~SPI_DMAF4_SPI3();
+	virtual ~SPI_DMAF1_SPI3();
 
 protected:
 
@@ -140,6 +141,7 @@ protected:
 
 private:
 };
+#endif //SPI3_BASE
 
-#endif /* STM32F4xx */
-#endif /* SPI_SPIDMAF4XX_H_ */
+#endif /* STM32F1xx */
+#endif /* SPI_SPIDMAF1XX_H_ */

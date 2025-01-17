@@ -17,6 +17,10 @@
 #include "SPIDMA.h"
 #include "core_debug.h"
 #include "stm32yyxx_ll_spi.h"
+/*
+#include "stm32f4xx_hal.h"
+#include "stm32f4xx_ll_spi.h"
+*/
 
 void SPI_DMA::begin() {
 	_spi.handle.State = HAL_SPI_STATE_RESET;
