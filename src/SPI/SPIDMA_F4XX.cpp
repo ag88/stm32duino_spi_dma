@@ -192,11 +192,11 @@ void SPI_DMAF4_SPI3::initDMA() {
 	__HAL_RCC_DMA1_CLK_ENABLE();
 
     // Initialize DMA for TX
-    hdma_tx.Instance = DMA1_Stream2;
+    hdma_tx.Instance = DMA1_Stream5;
     hdma_tx.Init.Channel = DMA_CHANNEL_0;
 
     // Initialize DMA for RX
-    hdma_rx.Instance = DMA1_Stream5;
+    hdma_rx.Instance = DMA1_Stream2;
     hdma_rx.Init.Channel = DMA_CHANNEL_0;
 
     SPI_DMAF4::initDMADefault();
