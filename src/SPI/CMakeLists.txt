@@ -11,11 +11,13 @@ target_sources(SPIDMA
 	SPIDMA.h
 	SPIDMA_F1XX.h		
 	SPIDMA_F4XX.h
+	SPIDMA_G4XX.h
   PRIVATE
   	SPIClass.cpp
   	SPIDMA.cpp
   	SPIDMA_F1XX.cpp
   	SPIDMA_F4XX.cpp
+  	SPIDMA_G4XX.cpp  	
 	utility/spi_com.h
 	utility/spi_com.c	
   )
