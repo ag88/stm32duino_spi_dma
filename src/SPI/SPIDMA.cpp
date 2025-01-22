@@ -198,6 +198,11 @@ void SPI_DMA::endTransaction() {
 }
 
 
+/*
+ * note that for MCUs that do not support the RXNE (recv not empty), TXE (transmit empty)  LL HAL interface,
+ * this is a pure virtual function and it needs to be implemented by the derived class
+ */
+#if ! ( defined(STM32H7xx) || defined(STM32H5xx) )
 uint8_t SPI_DMA::transfer(uint8_t data, bool skipReceive) {
 	uint8_t r = 0;
 	/* can DMA co-exist with single byte transfers? if not the DMA pause / resume are required */
@@ -212,6 +217,7 @@ uint8_t SPI_DMA::transfer(uint8_t data, bool skipReceive) {
 	// HAL_SPI_DMAResume(&_spi.handle);
 	return r;
 }
+#endif
 
 uint16_t SPI_DMA::transfer16(uint16_t data, bool skipReceive) {
 	uint16_t r = 0;
