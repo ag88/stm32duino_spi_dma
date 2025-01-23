@@ -198,11 +198,6 @@ void SPI_DMA::endTransaction() {
 }
 
 
-/*
- * note that for MCUs that do not support the RXNE (recv not empty), TXE (transmit empty)  LL HAL interface,
- * this is a pure virtual function and it needs to be implemented by the derived class
- */
-#if (defined(STM32F4xx) || defined(STM32G4xx) || defined(STM32F1xx))
 uint8_t SPI_DMA::transfer(uint8_t data, bool skipReceive) {
 	uint8_t r = 0;
 	/* can DMA co-exist with single byte transfers? if not the DMA pause / resume are required */
@@ -217,18 +212,28 @@ uint8_t SPI_DMA::transfer(uint8_t data, bool skipReceive) {
 	}
 	*/
 
+#if defined(SPI_SR_TXP)
+	while( ! (_spi.spi->SR & SPI_SR_TXP_Msk) == 0 ); //spinlock
+#else
 	while( ! (_spi.spi->SR & SPI_SR_TXE_Msk) == 0 ); //spinlock
-	_spi.spi->DR = data;
+#endif
+	LL_SPI_TransmitData8(_spi.spi, data);
+
+	// do we need to timeout? in theory timeout should not happen
+#if defined(SPI_SR_RXP)
+	while( ! (_spi.spi->SR & SPI_SR_RXP_Msk) == 0 ); //spinlock
+#else
+	while( ! (_spi.spi->SR & SPI_SR_RXNE_Msk) == 0 ); //spinlock
+#endif
 	if (!skipReceive) {
-		// do we need to timeout? in theory timeout should not happen
-		while( ! (_spi.spi->SR & SPI_SR_RXNE_Msk) == 0 ); //spinlock
-		r = _spi.spi->DR & 0xffU;
+		r = LL_SPI_ReceiveData8(_spi.spi);
+	} else { // read the byte to clear the RXNE or RXP flag
+		LL_SPI_ReceiveData8(_spi.spi);
 	}
 
 	// HAL_SPI_DMAResume(&_spi.handle);
 	return r;
 }
-#endif
 
 uint16_t SPI_DMA::transfer16(uint16_t data, bool skipReceive) {
 	uint16_t r = 0;
