@@ -202,18 +202,29 @@ void SPI_DMA::endTransaction() {
  * note that for MCUs that do not support the RXNE (recv not empty), TXE (transmit empty)  LL HAL interface,
  * this is a pure virtual function and it needs to be implemented by the derived class
  */
-#if ! ( defined(STM32H7xx) || defined(STM32H5xx) )
+#if (defined(STM32F4xx) || defined(STM32G4xx) || defined(STM32F1xx))
 uint8_t SPI_DMA::transfer(uint8_t data, bool skipReceive) {
 	uint8_t r = 0;
 	/* can DMA co-exist with single byte transfers? if not the DMA pause / resume are required */
 	// HAL_SPI_DMAPause(&_spi.handle);
+	/* HAL LL based codes:
 	while(!LL_SPI_IsActiveFlag_TXE(_spi.spi)); //spinlock
 	LL_SPI_TransmitData8(_spi.spi, data);
 	if (!skipReceive) {
-		/* do we need to timeout? in theory timeout should not happen */
+		// do we need to timeout? in theory timeout should not happen
 		while(!LL_SPI_IsActiveFlag_RXNE(_spi.spi)); //spinlock
 		r = LL_SPI_ReceiveData8(_spi.spi);
 	}
+	*/
+
+	while( ! (_spi.spi->SR & SPI_SR_TXE_Msk) == 0 ); //spinlock
+	_spi.spi->DR = data;
+	if (!skipReceive) {
+		// do we need to timeout? in theory timeout should not happen
+		while( ! (_spi.spi->SR & SPI_SR_RXNE_Msk) == 0 ); //spinlock
+		r = _spi.spi->DR & 0xffU;
+	}
+
 	// HAL_SPI_DMAResume(&_spi.handle);
 	return r;
 }

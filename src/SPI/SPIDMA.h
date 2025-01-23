@@ -34,7 +34,7 @@ public:
 	 * note that for MCUs that do not support the RXNE (recv not empty), TXE (transmit empty)  LL HAL interface,
 	 * this is a pure virtual function and it needs to be implemented by the derived class
 	 */
-#if ! ( defined(STM32H7xx) || defined(STM32H5xx) )
+#if (defined(STM32F4xx) || defined(STM32G4xx) || defined(STM32F1xx))
 	virtual uint8_t transfer(uint8_t data, bool skipReceive = SPI_TRANSMITRECEIVE);
 #else
 	virtual uint8_t transfer(uint8_t data, bool skipReceive = SPI_TRANSMITRECEIVE) = 0;
