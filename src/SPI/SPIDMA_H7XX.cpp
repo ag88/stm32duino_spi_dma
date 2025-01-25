@@ -78,7 +78,7 @@ void SPI_DMAH7::initDMADefault() {
     hdma_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
     hdma_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
     hdma_rx.Init.Mode = DMA_NORMAL;
-    hdma_rx.Init.Priority = DMA_PRIORITY_HIGH;
+    hdma_rx.Init.Priority = DMA_PRIORITY_LOW;
     hdma_rx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
 
     if (HAL_DMA_Init(&hdma_rx) != HAL_OK) {

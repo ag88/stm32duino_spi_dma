@@ -12,6 +12,10 @@
 #include "SPIDMA_F4XX.h"
 extern SPI_DMAF4 SPI;
 
+#elif defined(STM32F3xx)
+#include "SPIDMA_F3XX.h"
+extern SPI_DMAF3 SPI;
+
 #elif defined(STM32G4xx)
 #include "SPIDMA_G4XX.h"
 extern SPI_DMAG4 SPI;

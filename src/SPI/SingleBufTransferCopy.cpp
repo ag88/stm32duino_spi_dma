@@ -39,5 +39,5 @@ SingleBufTransferCopy::~SingleBufTransferCopy() {
 	// TODO Auto-generated destructor stub
 }
 
-extern const SingleBufferTransfer& singleBufTransferImpl = SingleBufTransferCopy();
+const SingleBufferTransfer& singleBufTransferImpl = SingleBufTransferCopy();
 

@@ -77,7 +77,7 @@ void SPI_DMAG4::initDMADefault() {
     hdma_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
     hdma_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
     hdma_rx.Init.Mode = DMA_NORMAL;
-    hdma_rx.Init.Priority = DMA_PRIORITY_HIGH;
+    hdma_rx.Init.Priority = DMA_PRIORITY_LOW;
 
     if (HAL_DMA_Init(&hdma_rx) != HAL_OK) {
         // Initialization Error

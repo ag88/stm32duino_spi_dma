@@ -12,7 +12,8 @@ target_sources(SPIDMA
   	SingleBufTransferCopy.h
   	SingleBufTransferInplace.h
 	SPIDMA.h
-	SPIDMA_F1XX.h		
+	SPIDMA_F1XX.h
+	SPIDMA_F3XX.h		
 	SPIDMA_F4XX.h
 	SPIDMA_G4XX.h
 	SPIDMA_H5XX.h
@@ -24,6 +25,7 @@ target_sources(SPIDMA
   	SingleBufTransferInplace.cpp  	
   	SPIDMA.cpp
   	SPIDMA_F1XX.cpp
+  	SPIDMA_F3XX.cpp
   	SPIDMA_F4XX.cpp
   	SPIDMA_G4XX.cpp
   	SPIDMA_H5XX.cpp

@@ -34,4 +34,4 @@ SingleBufTransferInplace::~SingleBufTransferInplace() {
 	// TODO Auto-generated destructor stub
 }
 
-extern const SingleBufferTransfer& singleBufTransferImpl = SingleBufTransferInplace();
+const SingleBufferTransfer& singleBufTransferImpl = SingleBufTransferInplace();
