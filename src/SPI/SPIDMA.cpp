@@ -242,6 +242,13 @@ uint16_t SPI_DMA::transfer16(uint16_t data, bool skipReceive) {
 	return r;
 }
 
+void SPI_DMA::transfer(void *buf, size_t count, bool skipReceive) {
+
+	singleBufTransfer_.transfer(&_spi.handle, buf, count, skipReceive);
+
+}
+
+
 void SPI_DMA::transfer(const void *tx_buf, void *rx_buf, size_t count) {
 	transfer_async(tx_buf, rx_buf, count);
 	// wait for transfer to complete
@@ -259,23 +266,6 @@ inline bool SPI_DMA::isTransferComplete() {
 	return HAL_SPI_GetState(&_spi.handle) == HAL_SPI_STATE_READY;
 }
 
-
-void SPI_DMA::transfer(void *buf, size_t count, bool skipReceive) {
-	uint8_t *rx_buf;
-	// assuming that DMA is 'pre-enabled'
-	// HAL_SPI_DMAResume(&_spi.handle);
-	if (skipReceive) {
-		HAL_SPI_Transmit_DMA(&_spi.handle, (uint8_t*) buf, count);
-	} else {
-		/* can we use the same buffer? that can save up on allocating
-		 * a temporary buffer on the stack here and save up on a memcpy */
-		rx_buf = (uint8_t *) alloca(count);
-		HAL_SPI_TransmitReceive_DMA(&_spi.handle, (uint8_t*) buf, (uint8_t*) rx_buf, count);
-		//wait for transfer to complete
-		while(HAL_SPI_GetState(&_spi.handle) != HAL_SPI_STATE_READY);
-		memcpy(buf, rx_buf, count);
-	}
-}
 
 /*
  * note this function returns SystemCoreClock by default

@@ -18,11 +18,14 @@
 #define SPI_SPIDMA_H_
 
 #include "SPIClass.h"
+#include "SingleBufTransferCopy.h"
+//#include "SingleBufTransferInplace.h"
 
 class SPI_DMA: public SPIClass {
 public:
-	SPI_DMA(uint32_t mosi = MOSI, uint32_t miso = MISO, uint32_t sclk = SCK, uint32_t ssel = PNUM_NOT_DEFINED)
-	  : SPIClass(mosi, miso, sclk, ssel) {};
+	SPI_DMA(uint32_t mosi = MOSI, uint32_t miso = MISO, uint32_t sclk = SCK, uint32_t ssel = PNUM_NOT_DEFINED,
+		const SingleBufferTransfer &singleBufferTransfer = singleBufTransferImpl )
+		: SPIClass(mosi, miso, sclk, ssel), singleBufTransfer_(singleBufferTransfer) {};
 
 	virtual void begin();
 	virtual void end();
@@ -99,6 +102,7 @@ protected:
 	virtual void initPins();
 
 private:
+	const SingleBufferTransfer& singleBufTransfer_;
 
 };
 
