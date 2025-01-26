@@ -31,10 +31,11 @@ void SPI_DMA::begin() {
 void SPI_DMA::init() {
 
 	//SPIClass::init();
+	initPins();
 	initSPI();
 	initDMA();
 	initNVIC();
-	initPins();
+
 }
 
 /* derived class should override this initSPI() method, enable SPI clock
@@ -151,6 +152,9 @@ void SPI_DMA::initSPIDefault(SPI_TypeDef *spi_reg) {
         // Initialization Error
         Error_Handler();
     }
+
+    __HAL_SPI_ENABLE(&_spi.handle);
+
 }
 
 
@@ -175,10 +179,29 @@ void SPI_DMA::initPins() {
       return;
     }
 
+    if (spi_mosi != _spi.spi || spi_miso != _spi.spi || spi_sclk != _spi.spi) {
+    	uint8_t spinum = 0;
+    	if( _spi.spi == SPI1 )
+    		spinum = 1;
+#if defined(SPI2)
+    	else if( _spi.spi == SPI2 )
+    		spinum = 2;
+#endif
+#if defined(SPI3)
+    	else if( _spi.spi == SPI3 )
+    		spinum = 3;
+#endif
+        core_debug("ERROR: assigned gpio pin does not match SPI %d\n", spinum);
+        return;
+    }
+
     /* Configure SPI GPIO pins */
     pinmap_pinout(_spi.pin_mosi, PinMap_SPI_MOSI);
     pinmap_pinout(_spi.pin_miso, PinMap_SPI_MISO);
     pinmap_pinout(_spi.pin_sclk, PinMap_SPI_SCLK);
+
+    if (_spi.pin_ssel != NC)
+    	pinmap_pinout(_spi.pin_ssel, PinMap_SPI_SSEL);
 
 }
 
