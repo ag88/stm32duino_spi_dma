@@ -33,9 +33,9 @@ extern SPI_DMAH7 SPI;
 extern SPI_DMAF1 SPI;
 
 #else
-#include "SPIClass.h"
+#include "SPIBasic.h"
+extern SPIBasic SPI;
 
-extern SPIClass SPI;
 #endif
 
 

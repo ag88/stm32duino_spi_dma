@@ -12,6 +12,9 @@
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_ll_spi.h"
 
+
+SPI_DMAF4 SPI;
+
 /*
  * this class should override this initSPI() method, enable SPI clock
  * and call SPI_DMA::initSPIDefault(SPI_TypeDef *spi_reg) with the correct
@@ -68,7 +71,7 @@ void SPI_DMAF4::initDMADefault() {
         Error_Handler();
     }
 
-    __HAL_LINKDMA(&_spi.handle, hdmatx, hdma_tx);
+    __HAL_LINKDMA(&spihandle, hdmatx, hdma_tx);
 
     // Initialize DMA for RX
     //hdma_rx.Instance = DMA2_Stream0;
@@ -87,7 +90,7 @@ void SPI_DMAF4::initDMADefault() {
         Error_Handler();
     }
 
-    __HAL_LINKDMA(&_spi.handle, hdmarx, hdma_rx);
+    __HAL_LINKDMA(&spihandle, hdmarx, hdma_rx);
 }
 
 
@@ -107,7 +110,7 @@ void SPI_DMAF4::initNVIC() {
  * SPI_2 and SPI_3. Source CLK is PCKL1
  *
  */
-uint32_t SPI_DMAF4::getClkFreq(spi_t *obj) {
+uint32_t SPI_DMAF4::getClkFreq() {
 	return HAL_RCC_GetPCLK2Freq();
 }
 
@@ -159,7 +162,7 @@ void SPI_DMAF4_SPI2::initNVIC() {
 
 }
 
-uint32_t SPI_DMAF4_SPI2::getClkFreq(spi_t *obj) {
+uint32_t SPI_DMAF4_SPI2::getClkFreq() {
 	/* SPI_2 and SPI_3. Source CLK is PCKL1 */
 	return HAL_RCC_GetPCLK1Freq();
 }
@@ -209,7 +212,7 @@ void SPI_DMAF4_SPI3::initNVIC() {
 
 }
 
-uint32_t SPI_DMAF4_SPI3::getClkFreq(spi_t *obj) {
+uint32_t SPI_DMAF4_SPI3::getClkFreq() {
 	/* SPI_2 and SPI_3. Source CLK is PCKL1 */
 	return HAL_RCC_GetPCLK1Freq();
 }

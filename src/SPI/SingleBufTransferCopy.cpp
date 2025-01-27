@@ -4,7 +4,8 @@
  *  Created on: Jan 25, 2025
  *      Author: andrew
  */
-
+#include <stdlib.h>
+#include <cstring>
 #include "SingleBufTransferCopy.h"
 
 SingleBufTransferCopy::SingleBufTransferCopy() {

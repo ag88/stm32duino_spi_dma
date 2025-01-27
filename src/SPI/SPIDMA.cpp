@@ -23,7 +23,7 @@
 */
 
 void SPI_DMA::begin() {
-	_spi.handle.State = HAL_SPI_STATE_RESET;
+	spihandle.State = HAL_SPI_STATE_RESET;
 	_spiSettings = SPISettings();
 	init();
 }
@@ -45,7 +45,7 @@ void SPI_DMA::init() {
 void SPI_DMA::initSPI() {
 #if defined SPI1_BASE
 	// Enable SPI clock
-	if (_spi.spi == SPI1 && ! __HAL_RCC_SPI1_IS_CLK_ENABLED() ) {
+	if (spi_reg == SPI1 && ! __HAL_RCC_SPI1_IS_CLK_ENABLED() ) {
 		__HAL_RCC_SPI1_CLK_ENABLE();
 		__HAL_RCC_SPI1_FORCE_RESET();
 		__HAL_RCC_SPI1_RELEASE_RESET();
@@ -56,12 +56,23 @@ void SPI_DMA::initSPI() {
 }
 */
 
-void SPI_DMA::initSPIDefault(SPI_TypeDef *spi_reg) {
+
+#define SPI_SPEED_CLOCK_DIV2_MHZ    ((uint32_t)2)
+#define SPI_SPEED_CLOCK_DIV4_MHZ    ((uint32_t)4)
+#define SPI_SPEED_CLOCK_DIV8_MHZ    ((uint32_t)8)
+#define SPI_SPEED_CLOCK_DIV16_MHZ   ((uint32_t)16)
+#define SPI_SPEED_CLOCK_DIV32_MHZ   ((uint32_t)32)
+#define SPI_SPEED_CLOCK_DIV64_MHZ   ((uint32_t)64)
+#define SPI_SPEED_CLOCK_DIV128_MHZ  ((uint32_t)128)
+#define SPI_SPEED_CLOCK_DIV256_MHZ  ((uint32_t)256)
+
+
+void SPI_DMA::initSPIDefault(SPI_TypeDef *spireg) {
 
 	if (spi_reg != NULL) {
-		_spi.spi = spi_reg;
+		spi_reg = spireg;
 	} else {
-		core_debug("_spi.spi must not be NULL");
+		core_debug("spi_reg must not be NULL");
 		return;
 	}
 
@@ -69,91 +80,94 @@ void SPI_DMA::initSPIDefault(SPI_TypeDef *spi_reg) {
 	SPIMode spimode = _spiSettings.getDataMode();
 	BitOrder bitorder = _spiSettings.getBitOrder();
 
+	if (speed == 0)
+		speed = SPI_SPEED_CLOCK_DEFAULT;
+
 	/*
-    _spi.handle.Instance = SPI1;
-    _spi.handle.Init.Mode = SPI_MODE_MASTER;
-    _spi.handle.Init.Direction = SPI_DIRECTION_2LINES;
-    _spi.handle.Init.DataSize = SPI_DATASIZE_8BIT;
-    _spi.handle.Init.CLKPolarity = SPI_POLARITY_LOW;
-    _spi.handle.Init.CLKPhase = SPI_PHASE_1EDGE;
-    _spi.handle.Init.NSS = SPI_NSS_SOFT;
-    _spi.handle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
-    _spi.handle.Init.FirstBit = SPI_FIRSTBIT_MSB;
-    _spi.handle.Init.TIMode = SPI_TIMODE_DISABLE;
-    _spi.handle.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
-    _spi.handle.Init.CRCPolynomial = 10;
+    spihandle.Instance = SPI1;
+    spihandle.Init.Mode = SPI_MODE_MASTER;
+    spihandle.Init.Direction = SPI_DIRECTION_2LINES;
+    spihandle.Init.DataSize = SPI_DATASIZE_8BIT;
+    spihandle.Init.CLKPolarity = SPI_POLARITY_LOW;
+    spihandle.Init.CLKPhase = SPI_PHASE_1EDGE;
+    spihandle.Init.NSS = SPI_NSS_SOFT;
+    spihandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
+    spihandle.Init.FirstBit = SPI_FIRSTBIT_MSB;
+    spihandle.Init.TIMode = SPI_TIMODE_DISABLE;
+    spihandle.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+    spihandle.Init.CRCPolynomial = 10;
     */
 
 
 	  // Configure the SPI pins
-	  if (_spi.pin_ssel != NC) {
-	    _spi.handle.Init.NSS = SPI_NSS_HARD_OUTPUT;
+	  if (pin_ssel != NC) {
+	    spihandle.Init.NSS = SPI_NSS_HARD_OUTPUT;
 	  } else {
-	    _spi.handle.Init.NSS = SPI_NSS_SOFT;
+	    spihandle.Init.NSS = SPI_NSS_SOFT;
 	  }
 
 	  /* Fill default value */
-	  _spi.handle.Instance			= _spi.spi;
-	  _spi.handle.Init.Mode			= SPI_MODE_MASTER;
+	  spihandle.Instance			= spi_reg;
+	  spihandle.Init.Mode			= SPI_MODE_MASTER;
 
-	  //uint32_t spi_freq = spi_getClkFreqInst(_spi.spi);
-	  uint32_t spi_freq = getClkFreq(&_spi);
+	  //uint32_t spi_freq = spi_getClkFreqInst(spi_reg);
+	  uint32_t spi_freq = getClkFreq();
 	  /* For SUBGHZSPI,  'SPI_BAUDRATEPRESCALER_*' == 'SUBGHZSPI_BAUDRATEPRESCALER_*' */
 	  if (speed >= (spi_freq / SPI_SPEED_CLOCK_DIV2_MHZ)) {
-	    _spi.handle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+	    spihandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
 	  } else if (speed >= (spi_freq / SPI_SPEED_CLOCK_DIV4_MHZ)) {
-	    _spi.handle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
+	    spihandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
 	  } else if (speed >= (spi_freq / SPI_SPEED_CLOCK_DIV8_MHZ)) {
-	    _spi.handle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;
+	    spihandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;
 	  } else if (speed >= (spi_freq / SPI_SPEED_CLOCK_DIV16_MHZ)) {
-	    _spi.handle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
+	    spihandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
 	  } else if (speed >= (spi_freq / SPI_SPEED_CLOCK_DIV32_MHZ)) {
-	    _spi.handle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_32;
+	    spihandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_32;
 	  } else if (speed >= (spi_freq / SPI_SPEED_CLOCK_DIV64_MHZ)) {
-	    _spi.handle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64;
+	    spihandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64;
 	  } else if (speed >= (spi_freq / SPI_SPEED_CLOCK_DIV128_MHZ)) {
-	    _spi.handle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_128;
+	    spihandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_128;
 	  } else {
 	    /*
 	     * As it is not possible to go below (spi_freq / SPI_SPEED_CLOCK_DIV256_MHZ).
 	     * Set prescaler at max value so get the lowest frequency possible.
 	     */
-	    _spi.handle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;
+	    spihandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;
 	  }
 
-	  _spi.handle.Init.Direction         = SPI_DIRECTION_2LINES;
+	  spihandle.Init.Direction         = SPI_DIRECTION_2LINES;
 
 	  if ((spimode == SPI_MODE0) || (spimode == SPI_MODE2)) {
-	    _spi.handle.Init.CLKPhase          = SPI_PHASE_1EDGE;
+	    spihandle.Init.CLKPhase          = SPI_PHASE_1EDGE;
 	  } else {
-	    _spi.handle.Init.CLKPhase          = SPI_PHASE_2EDGE;
+	    spihandle.Init.CLKPhase          = SPI_PHASE_2EDGE;
 	  }
 
 	  if ((spimode == SPI_MODE0) || (spimode == SPI_MODE1)) {
-	    _spi.handle.Init.CLKPolarity       = SPI_POLARITY_LOW;
+	    spihandle.Init.CLKPolarity       = SPI_POLARITY_LOW;
 	  } else {
-	    _spi.handle.Init.CLKPolarity       = SPI_POLARITY_HIGH;
+	    spihandle.Init.CLKPolarity       = SPI_POLARITY_HIGH;
 	  }
 
-	  _spi.handle.Init.CRCCalculation    = SPI_CRCCALCULATION_DISABLE;
-	  _spi.handle.Init.CRCPolynomial     = 7;
-	  _spi.handle.Init.DataSize          = SPI_DATASIZE_8BIT;
+	  spihandle.Init.CRCCalculation    = SPI_CRCCALCULATION_DISABLE;
+	  spihandle.Init.CRCPolynomial     = 7;
+	  spihandle.Init.DataSize          = SPI_DATASIZE_8BIT;
 
 	  if (bitorder == 0) {
-	    _spi.handle.Init.FirstBit          = SPI_FIRSTBIT_LSB;
+	    spihandle.Init.FirstBit          = SPI_FIRSTBIT_LSB;
 	  } else {
-	    _spi.handle.Init.FirstBit          = SPI_FIRSTBIT_MSB;
+	    spihandle.Init.FirstBit          = SPI_FIRSTBIT_MSB;
 	  }
 
-	  _spi.handle.Init.TIMode            = SPI_TIMODE_DISABLE;
+	  spihandle.Init.TIMode            = SPI_TIMODE_DISABLE;
 
 
-    if (HAL_SPI_Init(&_spi.handle) != HAL_OK) {
+    if (HAL_SPI_Init(&spihandle) != HAL_OK) {
         // Initialization Error
         Error_Handler();
     }
 
-    __HAL_SPI_ENABLE(&_spi.handle);
+    __HAL_SPI_ENABLE(&spihandle);
 
 }
 
@@ -169,26 +183,26 @@ void SPI_DMA::initNVIC(IRQn_Type DMA_IRQn_TX, IRQn_Type DMA_IRQn_RX) {
 
 void SPI_DMA::initPins() {
 
-    SPI_TypeDef *spi_mosi = (SPI_TypeDef *) pinmap_peripheral(_spi.pin_mosi, PinMap_SPI_MOSI);
-    SPI_TypeDef *spi_miso = (SPI_TypeDef *) pinmap_peripheral(_spi.pin_miso, PinMap_SPI_MISO);
-    SPI_TypeDef *spi_sclk = (SPI_TypeDef *) pinmap_peripheral(_spi.pin_sclk, PinMap_SPI_SCLK);
-    SPI_TypeDef *spi_ssel = (SPI_TypeDef *) pinmap_peripheral(_spi.pin_ssel, PinMap_SPI_SSEL);
+    SPI_TypeDef *spi_mosi = (SPI_TypeDef *) pinmap_peripheral(pin_mosi, PinMap_SPI_MOSI);
+    SPI_TypeDef *spi_miso = (SPI_TypeDef *) pinmap_peripheral(pin_miso, PinMap_SPI_MISO);
+    SPI_TypeDef *spi_sclk = (SPI_TypeDef *) pinmap_peripheral(pin_sclk, PinMap_SPI_SCLK);
+    SPI_TypeDef *spi_ssel = (SPI_TypeDef *) pinmap_peripheral(pin_ssel, PinMap_SPI_SSEL);
 
     if (spi_mosi == NULL || spi_miso == NULL || spi_sclk == NULL) {
       core_debug("ERROR: at least one SPI pin has no peripheral\n");
       return;
     }
 
-    if (spi_mosi != _spi.spi || spi_miso != _spi.spi || spi_sclk != _spi.spi) {
+    if (spi_mosi != spi_reg || spi_miso != spi_reg || spi_sclk != spi_reg) {
     	uint8_t spinum = 0;
-    	if( _spi.spi == SPI1 )
+    	if( spi_reg == SPI1 )
     		spinum = 1;
 #if defined(SPI2)
-    	else if( _spi.spi == SPI2 )
+    	else if( spi_reg == SPI2 )
     		spinum = 2;
 #endif
 #if defined(SPI3)
-    	else if( _spi.spi == SPI3 )
+    	else if( spi_reg == SPI3 )
     		spinum = 3;
 #endif
         core_debug("ERROR: assigned gpio pin does not match SPI %d\n", spinum);
@@ -196,12 +210,12 @@ void SPI_DMA::initPins() {
     }
 
     /* Configure SPI GPIO pins */
-    pinmap_pinout(_spi.pin_mosi, PinMap_SPI_MOSI);
-    pinmap_pinout(_spi.pin_miso, PinMap_SPI_MISO);
-    pinmap_pinout(_spi.pin_sclk, PinMap_SPI_SCLK);
+    pinmap_pinout(pin_mosi, PinMap_SPI_MOSI);
+    pinmap_pinout(pin_miso, PinMap_SPI_MISO);
+    pinmap_pinout(pin_sclk, PinMap_SPI_SCLK);
 
-    if (_spi.pin_ssel != NC)
-    	pinmap_pinout(_spi.pin_ssel, PinMap_SPI_SSEL);
+    if (pin_ssel != NC)
+    	pinmap_pinout(pin_ssel, PinMap_SPI_SSEL);
 
 }
 
@@ -224,50 +238,50 @@ void SPI_DMA::endTransaction() {
 uint8_t SPI_DMA::transfer(uint8_t data, bool skipReceive) {
 	uint8_t r = 0;
 	/* can DMA co-exist with single byte transfers? if not the DMA pause / resume are required */
-	// HAL_SPI_DMAPause(&_spi.handle);
-	/* HAL LL based codes:
-	while(!LL_SPI_IsActiveFlag_TXE(_spi.spi)); //spinlock
-	LL_SPI_TransmitData8(_spi.spi, data);
-	if (!skipReceive) {
-		// do we need to timeout? in theory timeout should not happen
-		while(!LL_SPI_IsActiveFlag_RXNE(_spi.spi)); //spinlock
-		r = LL_SPI_ReceiveData8(_spi.spi);
-	}
-	*/
+	// HAL_SPI_DMAPause(&spihandle);
+	// this is necessarily ugly due to different SPI hardware
+	// many mcus use:
+	//   TXE (transmit buf empty) flag
+	//   RXNE (receive buf no empty) flag
+	// and a single data register DR
+	// while mcus like stm32 H5/H7 uses TXP / RXP flags and 2 data registers TXDR, RXDR
 
 #if defined(SPI_SR_TXP)
-	while( ! (_spi.spi->SR & SPI_SR_TXP_Msk) == 0 ); //spinlock
+	while( ! (spi_reg->SR & SPI_SR_TXP_Msk) == 0 ); //spinlock
 #else
-	while( ! (_spi.spi->SR & SPI_SR_TXE_Msk) == 0 ); //spinlock
+	while( ! (spi_reg->SR & SPI_SR_TXE_Msk) == 0 ); //spinlock
 #endif
-	LL_SPI_TransmitData8(_spi.spi, data);
+	//LL_SPI_TransmitData8(spi_reg, data);
+#if defined(SPI_TXDR_TXDR)
+	spi_reg->TXDR = data;
+#else
+	spi_reg->DR = data;
+#endif
 
 	// do we need to timeout? in theory timeout should not happen
 #if defined(SPI_SR_RXP)
-	while( ! (_spi.spi->SR & SPI_SR_RXP_Msk) == 0 ); //spinlock
+	while( ! (spi_reg->SR & SPI_SR_RXP_Msk) == 0 ); //spinlock
 #else
-	while( ! (_spi.spi->SR & SPI_SR_RXNE_Msk) == 0 ); //spinlock
+	while( ! (spi_reg->SR & SPI_SR_RXNE_Msk) == 0 ); //spinlock
 #endif
-	if (!skipReceive) {
-		r = LL_SPI_ReceiveData8(_spi.spi);
-	} else { // read the byte to clear the RXNE or RXP flag
-		LL_SPI_ReceiveData8(_spi.spi);
-	}
 
-	// HAL_SPI_DMAResume(&_spi.handle);
+	//r = LL_SPI_ReceiveData8(spi_reg);
+	// read the byte regardless of skipReceive to clear the RXNE or RXP flag
+#if defined(SPI_TXDR_RXDR)
+	r = spi_reg->RXDR & 0xffU;
+#else
+	r = spi_reg->DR & 0xffU;
+#endif
+	if (skipReceive) r = 0;
+
+	// HAL_SPI_DMAResume(&spihandle);
 	return r;
 }
 
-uint16_t SPI_DMA::transfer16(uint16_t data, bool skipReceive) {
-	uint16_t r = 0;
-	r = transfer(data & 0xffUL, skipReceive);
-	r |= transfer((data >> 8) & 0xffUL, skipReceive) << 8;
-	return r;
-}
 
 void SPI_DMA::transfer(void *buf, size_t count, bool skipReceive) {
 
-	singleBufTransfer_.transfer(&_spi.handle, buf, count, skipReceive);
+	singleBufTransfer_.transfer(&spihandle, buf, count, skipReceive);
 
 }
 
@@ -281,12 +295,12 @@ void SPI_DMA::transfer(const void *tx_buf, void *rx_buf, size_t count) {
 
 inline void SPI_DMA::transfer_async(const void *tx_buf, void *rx_buf, size_t count) {
 	// assuming that DMA is 'pre-enabled'
-	// HAL_SPI_DMAResume(&_spi.handle);
-	HAL_SPI_TransmitReceive_DMA(&_spi.handle, (uint8_t*) tx_buf, (uint8_t*) rx_buf, count);
+	// HAL_SPI_DMAResume(&spihandle);
+	HAL_SPI_TransmitReceive_DMA(&spihandle, (uint8_t*) tx_buf, (uint8_t*) rx_buf, count);
 }
 
 inline bool SPI_DMA::isTransferComplete() {
-	return HAL_SPI_GetState(&_spi.handle) == HAL_SPI_STATE_READY;
+	return HAL_SPI_GetState(&spihandle) == HAL_SPI_STATE_READY;
 }
 
 
@@ -298,7 +312,7 @@ inline bool SPI_DMA::isTransferComplete() {
  * SPI1, SPI4, SPI5 and SPI6. Source CLK is PCKL2
  * SPI_2 and SPI_3. Source CLK is PCKL1
  */
-uint32_t SPI_DMA::getClkFreq(spi_t *obj) {
+uint32_t SPI_DMA::getClkFreq() {
 	return SystemCoreClock;
 	//return SPIClass::getClkFreq(obj);
 }

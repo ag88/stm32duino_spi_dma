@@ -8,7 +8,10 @@
 #ifndef SRC_SPI_SINGLEBUFTRANSFER_H_
 #define SRC_SPI_SINGLEBUFTRANSFER_H_
 
-#include "SPIClass.h"
+extern "C" {
+#include "stm32_def.h"
+}
+
 
 class SingleBufferTransfer {
 public:

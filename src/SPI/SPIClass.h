@@ -15,7 +15,8 @@
 #include "Arduino.h"
 #include <stdio.h>
 extern "C" {
-#include "utility/spi_com.h"
+#include "stm32_def.h"
+#include "PeripheralPins.h"
 }
 
 // SPI_HAS_TRANSACTION means SPI has
@@ -40,6 +41,26 @@ extern "C" {
 
 #define SPI_TRANSMITRECEIVE false
 #define SPI_TRANSMITONLY true
+
+///@brief specifies the SPI speed bus in HZ.
+#define SPI_SPEED_CLOCK_DEFAULT     4000000
+
+
+///@brief specifies the SPI mode to use
+//Mode          Clock Polarity (CPOL)       Clock Phase (CPHA)
+//SPI_MODE0             0                         0
+//SPI_MODE1             0                         1
+//SPI_MODE2             1                         0
+//SPI_MODE3             1                         1
+//enum definitions coming from SPI.h of SAM
+// SPI mode parameters for SPISettings
+typedef enum {
+  SPI_MODE0 = 0,
+  SPI_MODE1 = 1,
+  SPI_MODE2 = 2,
+  SPI_MODE3 = 3,
+} SPIMode;
+
 
 class SPISettings {
   public:
@@ -101,36 +122,36 @@ class SPIClass {
     // setMISO/MOSI/SCLK/SSEL have to be called before begin()
     void setMISO(uint32_t miso)
     {
-      _spi.pin_miso = digitalPinToPinName(miso);
+      pin_miso = digitalPinToPinName(miso);
     };
     void setMOSI(uint32_t mosi)
     {
-      _spi.pin_mosi = digitalPinToPinName(mosi);
+      pin_mosi = digitalPinToPinName(mosi);
     };
     void setSCLK(uint32_t sclk)
     {
-      _spi.pin_sclk = digitalPinToPinName(sclk);
+      pin_sclk = digitalPinToPinName(sclk);
     };
     void setSSEL(uint32_t ssel)
     {
-      _spi.pin_ssel = digitalPinToPinName(ssel);
+      pin_ssel = digitalPinToPinName(ssel);
     };
 
     void setMISO(PinName miso)
     {
-      _spi.pin_miso = (miso);
+      pin_miso = (miso);
     };
     void setMOSI(PinName mosi)
     {
-      _spi.pin_mosi = (mosi);
+      pin_mosi = (mosi);
     };
     void setSCLK(PinName sclk)
     {
-      _spi.pin_sclk = (sclk);
+      pin_sclk = (sclk);
     };
     void setSSEL(PinName ssel)
     {
-      _spi.pin_ssel = (ssel);
+      pin_ssel = (ssel);
     };
 
     virtual void begin(void);
@@ -145,14 +166,62 @@ class SPIClass {
     /* Transfer functions: must be called after initialization of the SPI
      * instance with begin() or beginTransaction().
      */
-    virtual uint8_t transfer(uint8_t data, bool skipReceive = SPI_TRANSMITRECEIVE);
+    /**
+      * @brief  Transfer one byte on the SPI bus.
+      *         begin() or beginTransaction() must be called at least once before.
+      * @param  data: byte to send.
+      * @param  skipReceive: skip receiving data after transmit or not.
+      *         SPI_TRANSMITRECEIVE or SPI_TRANSMITONLY.
+      *         Optional, default: SPI_TRANSMITRECEIVE.
+      * @return byte received from the slave.
+      *
+      * note this is abstract, derived class needs to implement it
+      */
+    virtual uint8_t transfer(uint8_t data, bool skipReceive = SPI_TRANSMITRECEIVE) = 0;
+
+    /**
+      * @brief  Transfer two bytes on the SPI bus in 16 bits format.
+      *         begin() or beginTransaction() must be called at least once before.
+      * @param  data: bytes to send.
+      * @param  skipReceive: skip receiving data after transmit or not.
+      *         SPI_TRANSMITRECEIVE or SPI_TRANSMITONLY.
+      *         Optional, default: SPI_TRANSMITRECEIVE.
+      * @return bytes received from the slave in 16 bits format.
+      *
+      * default implementation calls transfer(uint8_t data, bool skipReceive)
+      */
     virtual uint16_t transfer16(uint16_t data, bool skipReceive = SPI_TRANSMITRECEIVE);
-    virtual void transfer(void *buf, size_t count, bool skipReceive = SPI_TRANSMITRECEIVE);
+
+
+    /**
+      * @brief  Transfer several bytes. Only one buffer used to send and receive data.
+      *         begin() or beginTransaction() must be called at least once before.
+      * @param  buf: pointer to the bytes to send. The bytes received are copy in
+      *         this buffer.
+      * @param  count: number of bytes to send/receive.
+      * @param  skipReceive: skip receiving data after transmit or not.
+      *         SPI_TRANSMITRECEIVE or SPI_TRANSMITONLY.
+      *         Optional, default: SPI_TRANSMITRECEIVE.
+      *
+      * note this is abstract, derived class needs to implement it
+      */
+    virtual void transfer(void *buf, size_t count, bool skipReceive = SPI_TRANSMITRECEIVE) = 0;
 
     /* Expand SPI API
      * https://github.com/arduino/ArduinoCore-API/discussions/189
+     *
+     * @brief  Transfer several bytes. 2 buffers used to send and receive data.
+     *         begin() or beginTransaction() must be called at least once before.
+     * @param  tx_buf: pointer to the bytes to send.
+     * @param  rx_buf: pointer to the bytes to receive.
+     * @param  count: number of bytes to send/receive.
+     * @param  skipReceive: skip receiving data after transmit or not.
+     *         SPI_TRANSMITRECEIVE or SPI_TRANSMITONLY.
+     *         Optional, default: SPI_TRANSMITRECEIVE.
+     *
+     * note this is abstract, derived class needs to implement it
      */
-    virtual void transfer(const void *tx_buf, void *rx_buf, size_t count);
+    virtual void transfer(const void *tx_buf, void *rx_buf, size_t count) = 0;
 
     /* These methods are deprecated and kept for compatibility.
      * Use SPISettings with SPI.beginTransaction() to configure SPI parameters.
@@ -171,17 +240,35 @@ class SPIClass {
     // Could be used to mix Arduino API and STM32Cube HAL API (ex: DMA). Use at your own risk.
     SPI_HandleTypeDef *getHandle(void)
     {
-      return &(_spi.handle);
+      return &spihandle;
     }
 
   protected:
     // spi instance
-    spi_t         _spi;
+    //spi_t         _spi;
+
+    SPI_HandleTypeDef spihandle; //for HAL
+    SPI_TypeDef *spi_reg; //SPI register base
+    PinName pin_miso;
+    PinName pin_mosi;
+    PinName pin_sclk;
+    PinName pin_ssel;
+
     /* Current SPISettings */
     SPISettings   _spiSettings = SPISettings();
 
     virtual void init();
-    virtual uint32_t getClkFreq(spi_t *obj);
+
+    /* initSPI and getClkFreq are abstract
+     * and needs to be implemented by the derived class
+     */
+    virtual void initSPI() = 0;
+
+    /*
+     * note that get ClkFreq() has dependency on initialization
+     * the SPI instance should be initialised before calling
+     */
+    virtual uint32_t getClkFreq() = 0;
 
   private:
 };

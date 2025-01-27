@@ -7,6 +7,7 @@
 
 #include "SingleBufTransferInplace.h"
 
+
 SingleBufTransferInplace::SingleBufTransferInplace() {
 	// TODO Auto-generated constructor stub
 

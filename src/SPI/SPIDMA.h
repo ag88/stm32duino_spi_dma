@@ -33,15 +33,17 @@ public:
 	virtual void beginTransaction(SPISettings settings);
 	virtual void endTransaction();
 
-	virtual uint8_t transfer(uint8_t data, bool skipReceive = SPI_TRANSMITRECEIVE);
+	virtual uint8_t transfer(uint8_t data, bool skipReceive = SPI_TRANSMITRECEIVE) override;
 
+	/* defined and implemmented in SPIClass
 	virtual uint16_t transfer16(uint16_t data, bool skipReceive = SPI_TRANSMITRECEIVE);
+	*/
 
 	/* note if skipReceive is true, this is async, it returns while DMA is sending */
-	virtual void transfer(void *buf, size_t count, bool skipReceive = SPI_TRANSMITRECEIVE);
+	virtual void transfer(void *buf, size_t count, bool skipReceive = SPI_TRANSMITRECEIVE) override;
 
 	/* bulk transfer, this waits for transfer to complete */
-	virtual void transfer(const void *tx_buf, void *rx_buf, size_t count);
+	virtual void transfer(const void *tx_buf, void *rx_buf, size_t count) override;
 
 	/* note this is async, it returns while DMA is sending/receiving */
 	virtual void transfer_async(const void *tx_buf, void *rx_buf, size_t count);
@@ -69,7 +71,7 @@ protected:
      * SPI1, SPI4, SPI5 and SPI6. Source CLK is PCKL2
      * SPI_2 and SPI_3. Source CLK is PCKL1
      */
-	virtual uint32_t getClkFreq(spi_t *obj);
+	virtual uint32_t getClkFreq() override;
 
 	/*
 	 *  this is called by begin() which in turns call

@@ -11,6 +11,7 @@
 #if defined(STM32F4xx)
 #include "SPIDMA.h"
 
+
 class SPI_DMAF4 : public SPI_DMA {
 public:
 	SPI_DMAF4(uint32_t mosi = MOSI, uint32_t miso = MISO, uint32_t sclk = SCK, uint32_t ssel = PNUM_NOT_DEFINED)
@@ -88,7 +89,7 @@ protected:
      * SPI_2 and SPI_3. Source CLK is PCKL1
      *
      */
-	virtual uint32_t getClkFreq(spi_t *obj) override;
+	virtual uint32_t getClkFreq() override;
 
 };
 
@@ -113,7 +114,7 @@ protected:
 
 	virtual void initNVIC() override;
 
-	virtual uint32_t getClkFreq(spi_t *obj) override;
+	virtual uint32_t getClkFreq() override;
 private:
 };
 
@@ -136,10 +137,12 @@ protected:
 
 	virtual void initNVIC() override;
 
-	virtual uint32_t getClkFreq(spi_t *obj) override;
+	virtual uint32_t getClkFreq() override;
 
 private:
 };
+
+extern SPI_DMAF4 SPI;
 
 #endif /* STM32F4xx */
 #endif /* SPI_SPIDMAF4XX_H_ */
