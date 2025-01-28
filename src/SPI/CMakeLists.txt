@@ -2,12 +2,13 @@ add_library(SPIDMA)
 
 target_include_directories(SPIDMA PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 
-add_subdirectory("utility")
+#add_subdirectory("utility")
 
 target_sources(SPIDMA
   PUBLIC
 	SPI.h
   	SPIClass.h
+  	SPIBasic.h
   	SingleBufferTransfer.h
   	SingleBufTransferCopy.h
   	SingleBufTransferInplace.h
@@ -20,6 +21,7 @@ target_sources(SPIDMA
 	SPIDMA_H7XX.h
   PRIVATE
   	SPIClass.cpp
+  	SPIBasic.cpp
   	SingleBufferTransfer.cpp
   	SingleBufTransferCopy.cpp
   	SingleBufTransferInplace.cpp  	
@@ -30,8 +32,6 @@ target_sources(SPIDMA
   	SPIDMA_G4XX.cpp
   	SPIDMA_H5XX.cpp
   	SPIDMA_H7XX.cpp  	
-	utility/spi_com.h
-	utility/spi_com.c	
   )
 
 target_link_libraries(SPIDMA PUBLIC
