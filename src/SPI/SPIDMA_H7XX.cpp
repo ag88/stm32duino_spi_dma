@@ -106,7 +106,7 @@ void SPI_DMAH7::initNVIC() {
  * SPI_2 and SPI_3. Source CLK is PCKL1
  *
  */
-uint32_t SPI_DMAH7::getClkFreq(spi_t *obj) {
+uint32_t SPI_DMAH7::getClkFreq() {
 	return HAL_RCC_GetPCLK2Freq();
 }
 
@@ -158,7 +158,7 @@ void SPI_DMAH7_SPI2::initNVIC() {
 
 }
 
-uint32_t SPI_DMAH7_SPI2::getClkFreq(spi_t *obj) {
+uint32_t SPI_DMAH7_SPI2::getClkFreq() {
 	/* SPI_2 and SPI_3. Source CLK is PCKL1 */
 	return HAL_RCC_GetPCLK1Freq();
 }
@@ -208,7 +208,7 @@ void SPI_DMAH7_SPI3::initNVIC() {
 
 }
 
-uint32_t SPI_DMAH7_SPI3::getClkFreq(spi_t *obj) {
+uint32_t SPI_DMAH7_SPI3::getClkFreq() {
 	/* SPI_2 and SPI_3. Source CLK is PCKL1 */
 	return HAL_RCC_GetPCLK1Freq();
 }

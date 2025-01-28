@@ -88,7 +88,7 @@ protected:
      * SPI_2 and SPI_3. Source CLK is PCKL1
      *
      */
-	virtual uint32_t getClkFreq(spi_t *obj) override;
+	virtual uint32_t getClkFreq() override;
 
 };
 
@@ -113,7 +113,7 @@ protected:
 
 	virtual void initNVIC() override;
 
-	virtual uint32_t getClkFreq(spi_t *obj) override;
+	virtual uint32_t getClkFreq() override;
 private:
 };
 
@@ -137,7 +137,7 @@ protected:
 
 	virtual void initNVIC() override;
 
-	virtual uint32_t getClkFreq(spi_t *obj) override;
+	virtual uint32_t getClkFreq() override;
 
 private:
 };
