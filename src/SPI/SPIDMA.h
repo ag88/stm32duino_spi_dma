@@ -27,11 +27,14 @@ public:
 		const SingleBufferTransfer &singleBufferTransfer = singleBufTransferImpl )
 		: SPIClass(mosi, miso, sclk, ssel), singleBufTransfer_(singleBufferTransfer) {};
 
-	virtual void begin();
+	virtual void begin() override;
+
+	/* defined and implemented in SPIClass
 	virtual void end();
 
 	virtual void beginTransaction(SPISettings settings);
 	virtual void endTransaction();
+	*/
 
 	virtual uint8_t transfer(uint8_t data, bool skipReceive = SPI_TRANSMITRECEIVE) override;
 
@@ -80,7 +83,7 @@ protected:
 	 * 		initNVIC();
 	 * 		initPins();
 	 */
-	virtual void init();
+	virtual void init() override;
 
 	/* derived class should override this initSPI() method, enable SPI clock
 	 * and call SPI_DMA::initSPIDefault(SPI_TypeDef *spi_reg) with the correct

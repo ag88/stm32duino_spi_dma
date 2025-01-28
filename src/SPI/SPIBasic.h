@@ -1,5 +1,5 @@
 /*
- * DMASPI.h
+ * SPIBasic.h
  *
  *  Created on: Jan 9, 2025
  *      Author: andrew
@@ -9,8 +9,8 @@
  *
  *  https://github.com/stm32duino/Arduino_Core_STM32
  *
- *  Some of the SPIClass methods are overridden here with calls to HAL DMA transfer functions.
- *  e.g. those transfer() methods that use buffers
+ *  Some of the SPIClass methods are overridden here.
+ *  e.g. those init() and transfer() methods
  *
  */
 
@@ -50,7 +50,7 @@ public:
       *         SPI_TRANSMITRECEIVE or SPI_TRANSMITONLY.
       *         Optional, default: SPI_TRANSMITRECEIVE.
       *
-      * note this is abstract, derived class needs to implement it
+      * implemented in this class
       */
 	virtual void transfer(void *buf, size_t count, bool skipReceive = SPI_TRANSMITRECEIVE) override;
 
@@ -66,7 +66,7 @@ public:
      *         SPI_TRANSMITRECEIVE or SPI_TRANSMITONLY.
      *         Optional, default: SPI_TRANSMITRECEIVE.
      *
-     * note this is abstract, derived class needs to implement it
+     * implemented in this class
      */
 	virtual void transfer(const void *tx_buf, void *rx_buf, size_t count) override;
 

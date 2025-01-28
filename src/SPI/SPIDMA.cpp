@@ -220,20 +220,6 @@ void SPI_DMA::initPins() {
 }
 
 
-void SPI_DMA::end() {
-}
-
-void SPI_DMA::beginTransaction(SPISettings settings) {
-	if (_spiSettings != settings) {
-		_spiSettings = settings;
-		initSPI();
-	}
-
-}
-
-void SPI_DMA::endTransaction() {
-}
-
 
 uint8_t SPI_DMA::transfer(uint8_t data, bool skipReceive) {
 	uint8_t r = 0;

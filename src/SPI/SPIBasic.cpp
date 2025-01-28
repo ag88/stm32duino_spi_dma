@@ -1,5 +1,5 @@
 /*
- * DMASPI.cpp
+ * SPIBasic.cpp
  *
  *  Created on: Jan 9, 2025
  *      Author: andrew
@@ -9,8 +9,8 @@
  *
  *  https://github.com/stm32duino/Arduino_Core_STM32
  *
- *  Some of the SPIClass methods are overridden here with calls to HAL DMA transfer functions.
- *  e.g. those transfer() methods that use buffers
+ *  Some of the SPIClass methods are overridden here.
+ *  e.g. those init() and transfer() methods
  *
  */
 
@@ -125,9 +125,6 @@ SPI_TypeDef* SPIBasic::getSPIBASE() {
 }
 
 
-///@brief specifies the SPI speed bus in HZ.
-#define SPI_SPEED_CLOCK_DEFAULT     4000000
-
 #define SPI_SPEED_CLOCK_DIV2_MHZ    ((uint32_t)2)
 #define SPI_SPEED_CLOCK_DIV4_MHZ    ((uint32_t)4)
 #define SPI_SPEED_CLOCK_DIV8_MHZ    ((uint32_t)8)
@@ -238,6 +235,9 @@ void SPIBasic::initSPIDefault(SPI_TypeDef *spireg) {
 
 }
 
+/*
+ * enable SPI clock
+ */
 void SPIBasic::enableSPICLK(SPI_TypeDef *spireg) {
 #if defined SPI1_BASE
 	// Enable SPI clock
