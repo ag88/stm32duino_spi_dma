@@ -142,7 +142,6 @@ protected:
 private:
 };
 
-extern SPI_DMAF4 SPI;
 
 #endif /* STM32F4xx */
 #endif /* SPI_SPIDMAF4XX_H_ */

@@ -12,6 +12,8 @@
 #include "stm32f1xx_hal.h"
 #include "stm32f1xx_ll_spi.h"
 
+SPI_DMAF1 SPI;
+
 /*
  * this class should override this initSPI() method, enable SPI clock
  * and call SPI_DMA::initSPIDefault(SPI_TypeDef *spi_reg) with the correct

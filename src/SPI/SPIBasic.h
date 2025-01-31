@@ -122,6 +122,4 @@ private:
 
 };
 
-extern SPIBasic SPI;
-
 #endif /* SPI_SPIBasic_H_ */
