@@ -57,8 +57,8 @@ typedef SPI_DMAF1_SPI3 SPIClass3;
 #include "SPIBasic.h"
 extern SPIBasic SPI;
 typedef SPIBasic SPIClass1;
-typedef SPIBasic SPIClass2;
-typedef SPIBasic SPIClass3;
+typedef SPIBasic_SPI2 SPIClass2;
+typedef SPIBasic_SPI3 SPIClass3;
 
 
 #endif

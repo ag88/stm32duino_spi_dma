@@ -122,4 +122,32 @@ private:
 
 };
 
+/* SPI2 */
+class SPIBasic_SPI2 : public SPIBasic {
+public:
+	SPIBasic_SPI2(uint32_t mosi = PB15, uint32_t miso = PB14, uint32_t sclk = PB13, uint32_t ssel = PNUM_NOT_DEFINED)
+	  : SPIBasic(mosi, miso, sclk, ssel) {};
+
+    //  methods are implemented in SPIBasic base class
+
+	virtual ~SPIBasic_SPI2() {};
+
+protected:
+private:
+};
+
+class SPIBasic_SPI3 : public SPIBasic {
+public:
+	SPIBasic_SPI3(uint32_t mosi = PB5, uint32_t miso = PB4, uint32_t sclk = PB3, uint32_t ssel = PNUM_NOT_DEFINED)
+	  : SPIBasic(mosi, miso, sclk, ssel) {};
+
+	//  methods are implemented in SPIBasic base class
+
+	virtual ~SPIBasic_SPI3() {};
+
+protected:
+private:
+};
+
+
 #endif /* SPI_SPIBasic_H_ */
