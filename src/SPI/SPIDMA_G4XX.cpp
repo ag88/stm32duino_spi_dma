@@ -96,20 +96,6 @@ void SPI_DMAG4::initNVIC() {
 }
 
 
-
-/*
- * note this function should override SPI_DMA::getClkFreq (returns SystemCoreClock by default)
- * and should return the base clock frequency (e.g. PCLK)
- * used to derive the SPI pre-scalers for baud rates
- *
- * SPI1, SPI4, SPI5 and SPI6. Source CLK is PCKL2
- * SPI_2 and SPI_3. Source CLK is PCKL1
- *
- */
-uint32_t SPI_DMAG4::getClkFreq() {
-	return HAL_RCC_GetPCLK2Freq();
-}
-
 SPI_DMAG4::~SPI_DMAG4() {
 	// TODO Auto-generated destructor stub
 }
@@ -158,11 +144,6 @@ void SPI_DMAG4_SPI2::initNVIC() {
 
 }
 
-uint32_t SPI_DMAG4_SPI2::getClkFreq() {
-	/* SPI_2 and SPI_3. Source CLK is PCKL1 */
-	return HAL_RCC_GetPCLK1Freq();
-}
-
 
 /* SPI 3 */
 
@@ -207,11 +188,6 @@ void SPI_DMAG4_SPI3::initNVIC() {
 	// Configure NVIC for DMA (TX, RX)
 	SPI_DMA::initNVIC(DMA2_Channel4_IRQn, DMA2_Channel3_IRQn);
 
-}
-
-uint32_t SPI_DMAG4_SPI3::getClkFreq() {
-	/* SPI_2 and SPI_3. Source CLK is PCKL1 */
-	return HAL_RCC_GetPCLK1Freq();
 }
 
 #endif //STM32G4xx

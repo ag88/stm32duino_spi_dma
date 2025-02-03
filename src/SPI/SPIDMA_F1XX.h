@@ -79,16 +79,9 @@ protected:
 	// this is defined in base class SPI_DMA
 	// virtual void initPins();
 
-    /*
-     * note this function should override SPI_DMA::getClkFreq (returns SystemCoreClock by default)
-     * and should return the base clock frequency (e.g. PCLK)
-     * used to derive the SPI pre-scalers for baud rates
-     *
-     * SPI1, SPI4, SPI5 and SPI6. Source CLK is PCKL2
-     * SPI_2 and SPI_3. Source CLK is PCKL1
-     *
-     */
+    /* implemented in SPIDMA
 	virtual uint32_t getClkFreq() override;
+	*/
 
 };
 
@@ -113,7 +106,9 @@ protected:
 
 	virtual void initNVIC() override;
 
+	/* implemented in SPIDMA
 	virtual uint32_t getClkFreq() override;
+	*/
 private:
 };
 
@@ -137,7 +132,9 @@ protected:
 
 	virtual void initNVIC() override;
 
+	/* implemented in SPIDMA
 	virtual uint32_t getClkFreq() override;
+	*/
 
 private:
 };
