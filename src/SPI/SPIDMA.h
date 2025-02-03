@@ -67,6 +67,10 @@ protected:
     SPISettings   _spiSettings = SPISettings();
 
     /*
+     * edit:
+     * this is reimplemented using the SPIBasic generic getClkFreq codes.
+     *
+     * old notes:
      * note this function returns SystemCoreClock by default
      * derived class should override this getClkFreq and specify the base clock
      * frequency (e.g. PCLK) used to derive the SPI pre-scalers for baud rates
