@@ -71,7 +71,7 @@ void SPI_DMAH5::initDMADefault() {
       Error_Handler();
     }
 
-    __HAL_LINKDMA(&_spi.handle, hdmatx, hdma_tx);
+    __HAL_LINKDMA(&spihandle, hdmatx, hdma_tx);
 
     if (HAL_DMA_ConfigChannelAttributes(&hdma_tx, DMA_CHANNEL_NPRIV) != HAL_OK)
     {
@@ -98,7 +98,7 @@ void SPI_DMAH5::initDMADefault() {
       Error_Handler();
     }
 
-    __HAL_LINKDMA(&_spi.handle, hdmarx, hdma_rx);
+    __HAL_LINKDMA(&spihandle, hdmarx, hdma_rx);
 
     if (HAL_DMA_ConfigChannelAttributes(&hdma_rx, DMA_CHANNEL_NPRIV) != HAL_OK)
     {

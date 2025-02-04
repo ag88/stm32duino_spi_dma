@@ -64,7 +64,7 @@ void SPI_DMAF1::initDMADefault() {
       Error_Handler();
     }
 
-    __HAL_LINKDMA(&_spi.handle,hdmarx,hdma_rx);
+    __HAL_LINKDMA(&spihandle,hdmarx,hdma_rx);
 
     /* SPI1_TX Init */
     hdma_tx.Init.Direction = DMA_MEMORY_TO_PERIPH;
@@ -79,7 +79,7 @@ void SPI_DMAF1::initDMADefault() {
       Error_Handler();
     }
 
-    __HAL_LINKDMA(&_spi.handle,hdmatx,hdma_tx);
+    __HAL_LINKDMA(&spihandle,hdmatx,hdma_tx);
 
 }
 

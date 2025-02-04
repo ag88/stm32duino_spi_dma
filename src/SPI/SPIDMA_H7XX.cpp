@@ -69,7 +69,7 @@ void SPI_DMAH7::initDMADefault() {
         Error_Handler();
     }
 
-    __HAL_LINKDMA(&_spi.handle, hdmatx, hdma_tx);
+    __HAL_LINKDMA(&spihandle, hdmatx, hdma_tx);
 
     // Initialize DMA for RX
     //hdma_rx.Instance = DMA2_Stream0;
@@ -88,7 +88,7 @@ void SPI_DMAH7::initDMADefault() {
         Error_Handler();
     }
 
-    __HAL_LINKDMA(&_spi.handle, hdmarx, hdma_rx);
+    __HAL_LINKDMA(&spihandle, hdmarx, hdma_rx);
 }
 
 
