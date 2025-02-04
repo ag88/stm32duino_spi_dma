@@ -36,6 +36,13 @@ typedef SPI_DMAH5 SPIClass1;
 typedef SPI_DMAH5_SPI2 SPIClass2;
 typedef SPI_DMAH5_SPI3 SPIClass3;
 
+#elif defined(STM32F7xx)
+#include "SPIDMA_F7XX.h"
+extern SPI_DMAF7 SPI;
+typedef SPI_DMAF7 SPIClass1;
+typedef SPI_DMAF7_SPI2 SPIClass2;
+typedef SPI_DMAF7_SPI3 SPIClass3;
+
 #elif defined(STM32H7xx)
 #include "SPIDMA_H7XX.h"
 extern SPI_DMAH7 SPI;

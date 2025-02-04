@@ -17,6 +17,7 @@ target_sources(SPIDMA
 	SPIDMA_F3XX.h		
 	SPIDMA_F4XX.h
 	SPIDMA_G4XX.h
+	SPIDMA_F7XX.h
 	SPIDMA_H5XX.h
 	SPIDMA_H7XX.h
   PRIVATE
@@ -30,6 +31,7 @@ target_sources(SPIDMA
   	SPIDMA_F3XX.cpp
   	SPIDMA_F4XX.cpp
   	SPIDMA_G4XX.cpp
+  	SPIDMA_F7XX.cpp
   	SPIDMA_H5XX.cpp
   	SPIDMA_H7XX.cpp  	
   )

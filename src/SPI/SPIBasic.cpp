@@ -290,7 +290,7 @@ void SPIBasic::enableSPICLK(SPI_TypeDef *spireg) {
 #if defined SPI5_BASE
 	// Enable SPI clock
 	if (spireg == SPI5 ) {
-		if (! __HAL_RCC_SPI5_IS_CLK_ENABLED() {
+		if (! __HAL_RCC_SPI5_IS_CLK_ENABLED()) {
 			__HAL_RCC_SPI5_CLK_ENABLE();
 			__HAL_RCC_SPI5_FORCE_RESET();
 			__HAL_RCC_SPI5_RELEASE_RESET();
@@ -418,12 +418,7 @@ void SPIBasic::transfer(const uint8_t *tx_buf, uint8_t *rx_buf, size_t count, bo
 
 
 /*
- * note this function returns SystemCoreClock by default
- * derived class should override this getClkFreq and specify the base clock
- * frequency (e.g. PCLK) used to derive the SPI pre-scalers for baud rates
- *
- * SPI1, SPI4, SPI5 and SPI6. Source CLK is PCKL2
- * SPI_2 and SPI_3. Source CLK is PCKL1
+ * This function returns the spi peripherial frequency
  */
 
 uint32_t SPIBasic::getClkFreq() {
