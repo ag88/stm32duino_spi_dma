@@ -162,11 +162,6 @@ void SPI_DMAH5_SPI2::initNVIC() {
 
 }
 
-uint32_t SPI_DMAH5_SPI2::getClkFreq() {
-	/* SPI_2 and SPI_3. Source CLK is PCKL1 */
-	return HAL_RCC_GetPCLK1Freq();
-}
-
 
 /* SPI 3 */
 

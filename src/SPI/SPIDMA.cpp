@@ -238,10 +238,10 @@ uint8_t SPI_DMA::transfer(uint8_t data, bool skipReceive) {
 	while( ! (spi_reg->SR & SPI_SR_TXE_Msk) == 0 ); //spinlock
 #endif
 	//LL_SPI_TransmitData8(spi_reg, data);
-#if defined(SPI_TXDR_TXDR)
-	spi_reg->TXDR = data;
-#else
+#if defined(SPI_DR_DR)
 	spi_reg->DR = data;
+#else
+	spi_reg->TXDR = data;
 #endif
 
 	// do we need to timeout? in theory timeout should not happen
@@ -253,10 +253,10 @@ uint8_t SPI_DMA::transfer(uint8_t data, bool skipReceive) {
 
 	//r = LL_SPI_ReceiveData8(spi_reg);
 	// read the byte regardless of skipReceive to clear the RXNE or RXP flag
-#if defined(SPI_TXDR_RXDR)
-	r = spi_reg->RXDR & 0xffU;
-#else
+#if defined(SPI_DR_DR)
 	r = spi_reg->DR & 0xffU;
+#else
+	r = spi_reg->RXDR & 0xffU;
 #endif
 	if (skipReceive) r = 0;
 
