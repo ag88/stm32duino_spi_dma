@@ -29,6 +29,13 @@ typedef SPI_DMAG4 SPIClass1;
 typedef SPI_DMAG4_SPI2 SPIClass2;
 typedef SPI_DMAG4_SPI3 SPIClass3;
 
+#elif defined(STM32L4xx)
+#include "SPIDMA_L4XX.h"
+extern SPI_DMAL4 SPI;
+typedef SPI_DMAL4 SPIClass1;
+typedef SPI_DMAL4_SPI2 SPIClass2;
+typedef SPI_DMAL4_SPI3 SPIClass3;
+
 #elif defined(STM32H5xx)
 #include "SPIDMA_H5XX.h"
 extern SPI_DMAH5 SPI;
