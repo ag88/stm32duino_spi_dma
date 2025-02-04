@@ -403,15 +403,12 @@ void SPIBasic::transfer(const uint8_t *tx_buf, uint8_t *rx_buf, size_t count, bo
 
 	} // for
 
-	if (skipReceive) {
-		/* wait for transmit empty */
-#if defined(SPI_SR_TXP)
-		while( ! (spi_reg->SR & SPI_SR_TXP_Msk) == 0 ); //spinlock
-#else
-		while (!(spi_reg->SR & SPI_SR_TXE_Msk) == 0); //spinlock
+	/* wait for bsy flag off */
+#if defined(SPI_SR_BSY)
+	uint8_t timeout = 100; //timeout
+	while(LL_SPI_IsActiveFlag_BSY(spi_reg) && timeout > 0) timeout--;
 #endif
-		__HAL_SPI_CLEAR_OVRFLAG(&spihandle);
-	}
+	__HAL_SPI_CLEAR_OVRFLAG(&spihandle);
 
 }
 
