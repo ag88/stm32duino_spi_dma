@@ -93,7 +93,7 @@ void SPI_DMAL4::initDMADefault() {
 
 void SPI_DMAL4::initNVIC() {
 	// Configure NVIC for DMA (TX, RX)
-	SPI_DMA::initNVIC(DMA1_Channel2_IRQn, DMA1_Channel1_IRQn);
+	SPI_DMA::initNVIC(DMA1_Channel3_IRQn, DMA1_Channel2_IRQn);
 }
 
 
@@ -141,7 +141,7 @@ void SPI_DMAL4_SPI2::initDMA() {
 
 void SPI_DMAL4_SPI2::initNVIC() {
 	// Configure NVIC for DMA (TX, RX)
-	SPI_DMA::initNVIC(DMA2_Channel2_IRQn, DMA2_Channel1_IRQn);
+	SPI_DMA::initNVIC(DMA1_Channel5_IRQn, DMA1_Channel4_IRQn);
 
 }
 
@@ -186,7 +186,7 @@ void SPI_DMAL4_SPI3::initDMA() {
 
 void SPI_DMAL4_SPI3::initNVIC() {
 	// Configure NVIC for DMA (TX, RX)
-	SPI_DMA::initNVIC(DMA2_Channel4_IRQn, DMA2_Channel3_IRQn);
+	SPI_DMA::initNVIC(DMA2_Channel2_IRQn, DMA2_Channel1_IRQn);
 
 }
 
