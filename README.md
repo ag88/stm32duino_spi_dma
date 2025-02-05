@@ -1,6 +1,5 @@
 # stm32duino_spi_dma
-SPI with DMA for [stm32duino](https://github.com/stm32duino/Arduino_Core_STM32)  
-[Wiki](https://github.com/stm32duino/Arduino_Core_STM32/wiki)
+SPI with DMA for [stm32duino](https://github.com/stm32duino/Arduino_Core_STM32) &nbsp; [Wiki](https://github.com/stm32duino/Arduino_Core_STM32/wiki)
 
 ## This is not an official implementation
 
