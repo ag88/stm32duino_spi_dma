@@ -18,7 +18,7 @@ SPIClass2 spi2;
 SPIClass3 spi3;
 
 uint32_t spifreq = 10000000; //10 Mhz
-SPISettings spisettings(spifreq, BitOrder::LSBFIRST, SPIMode::SPI_MODE0);
+SPISettings spisettings(spifreq, BitOrder::MSBFIRST, SPIMode::SPI_MODE0);
 
 #define BUFSIZE 256
 uint8_t sendbuf[BUFSIZE], recvbuf[BUFSIZE];
