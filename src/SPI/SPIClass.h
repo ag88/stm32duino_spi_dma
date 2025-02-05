@@ -45,6 +45,12 @@ extern "C" {
 ///@brief specifies the SPI speed bus in HZ.
 #define SPI_SPEED_CLOCK_DEFAULT     4000000
 
+/* this is defined in wiring_constants.h
+enum BitOrder {
+  LSBFIRST = 0,
+  MSBFIRST = 1
+};
+*/
 
 ///@brief specifies the SPI mode to use
 //Mode          Clock Polarity (CPOL)       Clock Phase (CPHA)
@@ -60,7 +66,6 @@ typedef enum {
   SPI_MODE2 = 2,
   SPI_MODE3 = 3,
 } SPIMode;
-
 
 class SPISettings {
   public:
