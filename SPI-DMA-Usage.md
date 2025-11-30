@@ -217,4 +217,4 @@ License and credits
 
 ---
 
-This guide should help you get started with the DMA-enabled bulk transfer functions and the mapping between `SPIClass1/2/3` and the physical SPI peripherals. If you want, I can draft a short README.md suitable for adding to the repository that contains this content in repo-ready format.
+This guide should help you get started with the DMA-enabled bulk transfer functions and the mapping between `SPIClass1/2/3` and the physical SPI peripherals. 
