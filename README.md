@@ -60,5 +60,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ### Forum
 The community forum is https://www.stm32duino.com
+
 Original thread is https://www.stm32duino.com/viewtopic.php?t=2553
 
